@@ -49,10 +49,18 @@ const ContactVA = ({ projectId }: Props) => {
             } else {
                 throw new Error(data.error || "Failed to share project");
             }
-        } catch (error: any) {
-            console.error("Error sharing project:", error);
-            toast.error(error.message || "Failed to share project");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                // 如果 error 是 Error 实例，则访问其 message 属性
+                console.error("Error sharing project:", error);
+                toast.error(error.message || "Failed to share project");
+            } else {
+                // 如果 error 不是 Error 实例，则进行其他处理
+                console.error("Unknown error:", error);
+                toast.error("An unknown error occurred while sharing the project");
+            }
         }
+        
     };
 
     return (

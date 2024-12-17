@@ -39,8 +39,8 @@ const ChatInput = ({id}:{ id?: string }) => {
           createdAt: serverTimestamp(),
         }
        );
-      //  projectDocumentId = docRef.id;
-       (projectDocumentId = docRef.id), router.push(`/project/${projectDocumentId}`);
+       projectDocumentId = docRef.id;
+       router.push(`/project/${projectDocumentId}`);
       } 
 
       await addDoc(

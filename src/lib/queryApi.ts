@@ -1,7 +1,6 @@
 import openai from "./chatgpt";
 import { db } from "@/firebase";
 import { collection, getDocs, orderBy, query as firestoreQuery } from "firebase/firestore";
-import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 const planFormat = `
     The project plan MUST strictly follow this format:

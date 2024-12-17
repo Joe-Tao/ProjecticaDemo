@@ -139,9 +139,16 @@ const ProjectHeader = ({ projectId }: Props) => {
             } else {
                 throw new Error(data.message);
             }
-        } catch (error: any) {
-            toast.error(error.message || "Failed to send invitation");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                // 如果 error 是 Error 实例，则访问其 message 属性
+                toast.error(error.message || "Failed to send invitation");
+            } else {
+                // 如果 error 不是 Error 实例，则进行其他处理
+                toast.error("An unknown error occurred while sending the invitation");
+            }
         }
+        
     };
 
     const handleNavigation = (path: string) => {

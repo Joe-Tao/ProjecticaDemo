@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminDB } from "@/firebaseAdmin";
 import admin from "firebase-admin";
-import nodemailer from "nodemailer";
 
 // const transporter = nodemailer.createTransport({
 //   host: "smtp.gmail.com",

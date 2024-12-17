@@ -13,7 +13,7 @@ const Sidebar = () => {
   const { data: session } = useSession();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const [projects, loading, error] = useCollection(
+  const [projects, loading] = useCollection(
     session?.user?.email
       ? query(
           collection(db, "users", session.user.email, "projects"),

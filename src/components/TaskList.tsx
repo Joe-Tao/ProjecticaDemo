@@ -156,15 +156,40 @@ export default function TaskList({ projectId, readOnly = false, ownerEmail }: Ta
     fetchSections();
   }, [projectId, session?.user?.email, ownerEmail]);
 
-  // 修改保存函数
-  const saveSectionsToDb = async (updatedSections: Section[]) => {
+  // 修改 debounce 函数，专门用于处理 Section[] 类型
+  function debounce(
+    func: (sections: Section[]) => Promise<void>,
+    delay: number
+  ) {
+    let timeoutId: NodeJS.Timeout | undefined;
+
+    function debouncedFunction(sections: Section[]): void {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      timeoutId = setTimeout(() => {
+        func(sections);
+      }, delay);
+    }
+
+    debouncedFunction.cancel = function(): void {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+
+    return debouncedFunction;
+  }
+
+  // 修改 saveSectionsToDb 函数
+  const saveSectionsToDb = async (updatedSections: Section[]): Promise<void> => {
     if (!session?.user?.email) {
       console.log("No user session found");
       return;
     }
     
     try {
-      // 简化数据结构，只保存必要的数据
       const sectionsData = updatedSections.map(section => ({
         id: section.id,
         name: section.name,
@@ -179,44 +204,28 @@ export default function TaskList({ projectId, readOnly = false, ownerEmail }: Ta
       }));
 
       const docRef = doc(db, "users", session.user.email, "projects", projectId, "sections", "data");
-      
-      // 直接保存简化后的数据
-      const dataToSave = {
+      await setDoc(docRef, {
         sections: sectionsData,
         updatedAt: new Date().toISOString()
-      };
+      });
 
-      console.log("Attempting to save data:", dataToSave);
-
-      await setDoc(docRef, dataToSave);
-      console.log(hasChanges)
-      console.log("Data saved successfully");
       toast.success("Changes saved successfully!");
       setHasChanges(false);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        // 如果 error 是一个 Error 对象
-        console.error("Full error object:", error);
-        console.error("Error saving sections:", {
-          message: error.message,
-          code: (error as any).code, // 如果 `code` 是自定义的，你可以进一步检查
-          details: (error as any).details, // 这里也可以根据实际情况调整类型
-          stack: error.stack
-        });
-      } else {
-        // 如果 error 不是一个 Error 对象，进行适当处理
-        console.error("Unexpected error:", error);
-      }
-      
+    } catch (error) {
+      console.error("Error saving sections:", error);
       toast.error("Failed to save changes. Please try again.");
     }
-    
   };
 
-  // 修改更新函数，添加防抖
-  const debouncedSave = debounce((sections: Section[]) => {
-    saveSectionsToDb(sections);
-  }, 1000);
+  // 创建防抖保存函数
+  const debouncedSave = debounce(saveSectionsToDb, 1000);
+
+  // 添加清理函数
+  useEffect(() => {
+    return () => {
+      debouncedSave.cancel();
+    };
+  }, []);
 
   // 修改处理函数，添加只读检查
   const handleNameChange = (sectionId: string, taskId: string, newName: string) => {
@@ -315,13 +324,6 @@ export default function TaskList({ projectId, readOnly = false, ownerEmail }: Ta
     }));
     setSections(updatedSections);
   };
-
-//   // 添加清理函数
-//   useEffect(() => {
-//     return () => {
-//       debouncedSave.cancel();
-//     };
-//   }, []);
 
   return (
     <div className="w-1/2">
@@ -500,20 +502,3 @@ export default function TaskList({ projectId, readOnly = false, ownerEmail }: Ta
   );
 }
 
-// 添加防抖函数
-function debounce<T extends (...args: any[]) => void>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: ReturnType<typeof setTimeout>;
-
-  return function executedFunction(...args: Parameters<T>) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}

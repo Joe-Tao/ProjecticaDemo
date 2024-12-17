@@ -35,7 +35,8 @@ export default function MessagesPage() {
       if (!session?.user?.email) return;
       try {
         const membersRef = doc(db, "users", session.user.email, "projects", projectId, "members", "list");
-        const membersDoc = await getDoc(membersRef);
+        console.log(membersRef)
+        // const membersDoc = await getDoc(membersRef);
         // if (membersDoc.exists()) {
         //   setProjectMembers(membersDoc.data().members || []);
         // }
