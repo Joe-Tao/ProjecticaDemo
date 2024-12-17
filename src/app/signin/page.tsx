@@ -33,7 +33,7 @@ export default async function SignInPage() {
                             Sign in with Google
                         </button>
                     </form>
-                    <form
+                    {/* <form
                         action={async () => {
                             "use server"
                             await signIn()
@@ -43,7 +43,7 @@ export default async function SignInPage() {
                             <Image src={githubImage} alt="Github" className="w-6 bg-gray-700 rounded-full group-hover:bg-white duration-300" /> 
                             Sign in with Github
                         </button>
-                    </form>
+                    </form> */}
                 </div>
             </div>
             
