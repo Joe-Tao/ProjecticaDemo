@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDB } from "@/firebaseAdmin";
 import admin from "firebase-admin";
 import nodemailer from "nodemailer";
-import { render } from "@react-email/render";
-import { ProjectInviteEmail } from "@/components/mail/Mail";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -63,20 +61,20 @@ export async function POST(req: NextRequest) {
     }
 
     // 发送邀请邮件
-    const emailHtml = render(
-      ProjectInviteEmail({
-        inviterName: inviterEmail,
-        projectName: projectName,
-        projectId: projectId,
-      })
-    );
+    // const emailHtml = render(
+    //   ProjectInviteEmail({
+    //     inviterName: inviterEmail,
+    //     projectName: projectName,
+    //     projectId: projectId,
+    //   })
+    // );
 
-    await transporter.sendMail({
-      from: `"Projectica" <${process.env.GMAIL_USER}>`,
-      to: inviteeEmail,
-      subject: `You've been added to ${projectName} on Projectica`,
-      html: await emailHtml,
-    });
+    // await transporter.sendMail({
+    //   from: `"Projectica" <${process.env.GMAIL_USER}>`,
+    //   to: inviteeEmail,
+    //   subject: `You've been added to ${projectName} on Projectica`,
+    //   html: await emailHtml,
+    // });
 
     return NextResponse.json({
       success: true,
