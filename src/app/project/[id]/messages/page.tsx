@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { collection, query, orderBy, addDoc, serverTimestamp, onSnapshot, doc, getDoc } from "firebase/firestore";
+import { collection, query, orderBy, addDoc, serverTimestamp, onSnapshot, doc} from "firebase/firestore";
 import { db } from "@/firebase";
 import Image from "next/image";
 import { FiSend } from "react-icons/fi";

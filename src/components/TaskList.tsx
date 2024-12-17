@@ -105,7 +105,7 @@ export default function TaskList({ projectId, readOnly = false, ownerEmail }: Ta
   const [members, setMembers] = useState<Member[]>([]);
   const [showDatePicker, setShowDatePicker] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
-
+  console.log(hasChanges)
   // 加载项目成员
   useEffect(() => {
     const fetchMembers = async () => {
