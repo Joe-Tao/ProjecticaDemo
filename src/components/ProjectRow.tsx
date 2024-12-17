@@ -8,7 +8,6 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { collection, deleteDoc, doc, orderBy, query, getDoc } from "firebase/firestore";
 import Link from "next/link";
 import { IoChatboxOutline } from "react-icons/io5";
-import { motion } from "framer-motion";
 import ProjectOptions from "./ProjectOptions";
 
 interface Props {
@@ -117,31 +116,31 @@ const ProjectRow = ({ id }: Props) => {
           {shouldAnimate ? (
             projectText ? (
               projectText.split("").map((character: string, index: number) => (
-                <motion.span
+                <span
                   key={index}
-                  variants={{
-                    initial: {
-                      opacity: 0,
-                      x: -100,
-                    },
-                    animate: {
-                      opacity: 1,
-                      x: 0,
-                    },
-                  }}
-                  initial={shouldAnimate ? "initial" : undefined}
-                  animate={shouldAnimate ? "animate" : undefined}
-                  transition={{
-                    duration: 0.25,
-                    ease: "easeIn",
-                    delay: index * 0.05,
-                    staggerChildren: 0.05,
-                  }}
+                  // variants={{
+                  //   initial: {
+                  //     opacity: 0,
+                  //     x: -100,
+                  //   },
+                  //   animate: {
+                  //     opacity: 1,
+                  //     x: 0,
+                  //   },
+                  // }}
+                  // initial={shouldAnimate ? "initial" : undefined}
+                  // animate={shouldAnimate ? "animate" : undefined}
+                  // transition={{
+                  //   duration: 0.25,
+                  //   ease: "easeIn",
+                  //   delay: index * 0.05,
+                  //   staggerChildren: 0.05,
+                  // }}
                 >
                   <span className="text-sm font-medium tracking-wide text-green-400">
                     {character}
                   </span>
-                </motion.span>
+                </span>
               ))
             ) : (
               <span className="text-sm font-medium tracking-wide">
