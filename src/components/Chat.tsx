@@ -3,10 +3,9 @@
 import { db } from "@/firebase";
 import { collection, orderBy, query } from "firebase/firestore";
 import { useSession } from "next-auth/react";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Message from "./Message";
-import ChatInput from "./ChatInput";
 import ChatHelp from "./ChatHelp";
 
 interface ChatProps {
@@ -15,11 +14,10 @@ interface ChatProps {
     onSaveToPlan?: (text: string) => void;
 }
 
-const Chat = ({ id, disableAutoScroll, onSaveToPlan }: ChatProps) => {
+const Chat = ({ id, onSaveToPlan }: ChatProps) => {
     const {data: session} = useSession();
     const userEmail = session?.user ? (session.user.email as string) : "unknown";
     const bottomRef = useRef<HTMLDivElement>(null);
-
     const [messages] = useCollection(
         id ? 
         query(

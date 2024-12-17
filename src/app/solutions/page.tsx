@@ -74,12 +74,13 @@ const SolutionsPage = () => {
 
         <div className="mt-16 text-center">
           <p className="text-gray-400">
-            Can't find what you're looking for?{' '}
+            Can&quot;t find what you&apos;re looking for?{' '}
             <Link href="/project/new" className="text-blue-400 hover:text-blue-300">
               Start a custom project
             </Link>
           </p>
-        </div>
+      </div>
+
       </div>
     </div>
   );

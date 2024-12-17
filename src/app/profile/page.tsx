@@ -8,6 +8,7 @@ import Image from "next/image";
 import { FiEdit2, FiMail, FiUser, FiCalendar } from "react-icons/fi";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { Timestamp } from 'firebase/firestore';
 
 interface UserProfile {
   name: string;
@@ -21,7 +22,7 @@ interface UserProfile {
 interface Project {
   id: string;
   name: string;
-  createdAt: any;
+  createdAt: Timestamp;
   status?: string;
 }
 

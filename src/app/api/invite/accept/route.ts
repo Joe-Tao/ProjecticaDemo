@@ -71,11 +71,20 @@ export async function POST(req: NextRequest) {
       message: "Invitation accepted successfully",
     });
 
-  } catch (error: any) {
-    console.error("Accept Invite API Error:", error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || "Failed to accept invitation",
-    }, { status: 500 });
-  }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+        console.error("Accept Invite API Error:", error);
+        return NextResponse.json({
+          success: false,
+          message: error.message || "Failed to accept invitation",
+        }, { status: 500 });
+    } else {
+        console.error("Accept Invite API Error: Unknown error");
+        return NextResponse.json({
+          success: false,
+          message: "Failed to accept invitation",
+        }, { status: 500 });
+    }
+}
+
 } 

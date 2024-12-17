@@ -137,10 +137,10 @@ export default function TaskList({ projectId, readOnly = false, ownerEmail }: Ta
         if (sectionsDoc.exists()) {
           const data = sectionsDoc.data();
           if (data && data.sections) {
-            const loadedSections = data.sections.map((section: any) => ({
+            const loadedSections = data.sections.map((section: Section) => ({
               ...section,
               icon: <Zap className="h-4 w-4 text-yellow-400" />,
-              tasks: section.tasks.map((task: any) => ({
+              tasks: section.tasks.map((task: Task) => ({
                 ...task,
                 isEditing: false
               }))
@@ -189,21 +189,28 @@ export default function TaskList({ projectId, readOnly = false, ownerEmail }: Ta
       console.log("Attempting to save data:", dataToSave);
 
       await setDoc(docRef, dataToSave);
-
+      console.log(hasChanges)
       console.log("Data saved successfully");
       toast.success("Changes saved successfully!");
       setHasChanges(false);
-    } catch (error: any) {
-      console.error("Full error object:", error);
-      console.error("Error saving sections:", {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        stack: error.stack
-      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        // 如果 error 是一个 Error 对象
+        console.error("Full error object:", error);
+        console.error("Error saving sections:", {
+          message: error.message,
+          code: (error as any).code, // 如果 `code` 是自定义的，你可以进一步检查
+          details: (error as any).details, // 这里也可以根据实际情况调整类型
+          stack: error.stack
+        });
+      } else {
+        // 如果 error 不是一个 Error 对象，进行适当处理
+        console.error("Unexpected error:", error);
+      }
       
       toast.error("Failed to save changes. Please try again.");
     }
+    
   };
 
   // 修改更新函数，添加防抖
@@ -494,11 +501,11 @@ export default function TaskList({ projectId, readOnly = false, ownerEmail }: Ta
 }
 
 // 添加防抖函数
-function debounce<T extends (...args: any[]) => any>(
+function debounce<T extends (...args: any[]) => void>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout>;
 
   return function executedFunction(...args: Parameters<T>) {
     const later = () => {

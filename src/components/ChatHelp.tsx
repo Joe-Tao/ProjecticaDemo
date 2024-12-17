@@ -4,7 +4,7 @@ import { db } from "@/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
-import { PiFinnTheHuman, PiLightbulb, PiTreeStructure } from "react-icons/pi";
+import { PiLightbulb, PiTreeStructure } from "react-icons/pi";
 import { MdEditNote } from "react-icons/md";
 import { GiGraduateCap } from "react-icons/gi";
 

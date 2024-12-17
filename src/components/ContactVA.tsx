@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { PiFinnTheHuman } from "react-icons/pi";
 import { IoMdClose } from "react-icons/io";
-import { FaHandsHelping, FaWhatsapp, FaShare } from "react-icons/fa";
+import { FaHandsHelping, FaShare } from "react-icons/fa";
 import { FaTelegram } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";

@@ -1,7 +1,7 @@
 import { auth, signIn } from "@/auth"
 import { Metadata } from "next";
 import Image from "next/image";
-import { githubImage, googleImage } from "@/app/assets";
+import { googleImage } from "@/app/assets";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {

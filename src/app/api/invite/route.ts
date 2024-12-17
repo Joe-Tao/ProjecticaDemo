@@ -3,19 +3,19 @@ import { adminDB } from "@/firebaseAdmin";
 import admin from "firebase-admin";
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   host: "smtp.gmail.com",
+//   port: 465,
+//   secure: true,
+//   auth: {
+//     user: process.env.GMAIL_USER,
+//     pass: process.env.GMAIL_APP_PASSWORD,
+//   },
+// });
 
 export async function POST(req: NextRequest) {
   try {
-    const { projectId, inviteeEmail, inviterEmail, projectName } = await req.json();
+    const { projectId, inviteeEmail, inviterEmail} = await req.json();
 
     if (!projectId || !inviteeEmail || !inviterEmail) {
       return NextResponse.json({
@@ -81,11 +81,20 @@ export async function POST(req: NextRequest) {
       message: "Member added and invitation sent successfully",
     });
 
-  } catch (error: any) {
-    console.error("Invite API Error:", error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || "Failed to send invitation",
-    }, { status: 500 });
-  }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+        console.error("Invite API Error:", error);
+        return NextResponse.json({
+          success: false,
+          message: error.message || "Failed to send invitation",
+        }, { status: 500 });
+    } else {
+        console.error("Invite API Error: Unknown error");
+        return NextResponse.json({
+          success: false,
+          message: "Failed to send invitation",
+        }, { status: 500 });
+    }
+}
+
 } 

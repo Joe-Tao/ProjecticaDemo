@@ -13,6 +13,15 @@ interface ProjectStats {
   lastActivity: string;
 }
 
+interface Task {
+  completed: boolean;
+}
+
+interface Section {
+  tasks: Task[];
+}
+
+
 export default function ProjectPage() {
   const params = useParams();
   const projectId = params.id as string;
@@ -38,10 +47,15 @@ export default function ProjectPage() {
           let totalTasks = 0;
           let completedTasks = 0;
 
-          sections.forEach((section: any) => {
+          // sections.forEach((section: any) => {
+          //   totalTasks += section.tasks.length;
+          //   completedTasks += section.tasks.filter((task: any) => task.completed).length;
+          // });
+          sections.forEach((section: Section) => {
             totalTasks += section.tasks.length;
-            completedTasks += section.tasks.filter((task: any) => task.completed).length;
+            completedTasks += section.tasks.filter((task: Task) => task.completed).length;
           });
+          
 
           // 获取成员数据
           const membersRef = doc(db, "users", session.user.email, "projects", projectId, "members", "list");

@@ -86,7 +86,8 @@ const ChatInput = ({id}:{ id?: string }) => {
   const handleAttachment = () => {
     console.log("Attachment clicked");
   };
-
+  console.log(loading)
+  
   return (
     <div className="flex flex-col items-center justify-center mx-auto pt-3 px-4 w-full">
       <form

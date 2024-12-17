@@ -63,11 +63,19 @@ export const POST = async (req: NextRequest) => {
       message: "Projectica has responded",
     });
     
-  } catch (error: any) {
-    console.error("API Error:", error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || "Internal server error",
-    }, { status: 500 });
-  }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+        console.error("API Error:", error);
+        return NextResponse.json({
+          success: false,
+          message: error.message || "Internal server error",
+        }, { status: 500 });
+    } else {
+        console.error("API Error: Unknown error");
+        return NextResponse.json({
+          success: false,
+          message: "Internal server error",
+        }, { status: 500 });
+    }
+}
 };

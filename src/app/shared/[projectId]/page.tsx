@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/firebase";
 import ProjectPlan from "@/components/ProjectPlan";
 import TaskList from "@/components/TaskList";
@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 interface SharedProject {
   name: string;
   userId: string;
-  createdAt: any;
+  createdAt: Timestamp;
 }
 
 export default function SharedProjectPage() {

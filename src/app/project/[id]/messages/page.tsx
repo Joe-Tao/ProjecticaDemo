@@ -8,6 +8,7 @@ import { db } from "@/firebase";
 import Image from "next/image";
 import { FiSend } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { Timestamp } from "firebase/firestore";
 
 interface Message {
   id: string;
@@ -17,7 +18,7 @@ interface Message {
     name: string;
     image: string;
   };
-  createdAt: any;
+  createdAt: Timestamp;
 }
 
 export default function MessagesPage() {
@@ -26,7 +27,7 @@ export default function MessagesPage() {
   const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [projectMembers, setProjectMembers] = useState<any[]>([]);
+  // const [projectMembers, setProjectMembers] = useState<unknown[]>([]);
 
   // 加载项目成员
   useEffect(() => {
@@ -35,9 +36,9 @@ export default function MessagesPage() {
       try {
         const membersRef = doc(db, "users", session.user.email, "projects", projectId, "members", "list");
         const membersDoc = await getDoc(membersRef);
-        if (membersDoc.exists()) {
-          setProjectMembers(membersDoc.data().members || []);
-        }
+        // if (membersDoc.exists()) {
+        //   setProjectMembers(membersDoc.data().members || []);
+        // }
       } catch (error) {
         console.error("Error fetching members:", error);
       }

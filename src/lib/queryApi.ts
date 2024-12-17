@@ -78,10 +78,16 @@ const query = async(prompt: string, projectId: string, model: string, userEmail:
         }
 
         return res.choices[0].message.content;
-    } catch (err: any) {
-        console.error("Query Error:", err);
-        throw err; // 向上抛出错误以便更好地处理
-    }
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error("Query Error:", err);
+          throw err; // 向上抛出错误以便更好地处理
+        } else {
+          console.error("Unknown error:", err);
+          throw new Error("An unknown error occurred");
+        }
+      }
+      
 }
 
 export default query;

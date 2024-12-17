@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import Chat from '@/components/Chat';
-import { FiMessageSquare, FiClipboard, FiPlus } from 'react-icons/fi';
+import { FiPlus } from 'react-icons/fi';
 import { useSession } from "next-auth/react";
 import { addDoc, serverTimestamp } from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
@@ -17,12 +16,11 @@ type Tab = 'projects' | 'chat' | 'plan';
 
 const WorkspacePage = () => {
   const [activeTab, setActiveTab] = useState<Tab>('projects');
-  const [projectPlan, setProjectPlan] = useState<string>('');
   const { data: session, status } = useSession();
   const userEmail = session?.user?.email;
   const router = useRouter();
 
-  const [projects, loading, error] = useCollection(
+  const [projects, loading] = useCollection(
     userEmail ?
       query(
         collection(db, "users", userEmail, "projects"),
@@ -65,7 +63,7 @@ const WorkspacePage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 工作区标题 */}
         <div className="flex items-center justify-between py-4">
-          <h1 className="text-2xl font-bold text-white">{session?.user?.name}'s Workspace</h1>
+          <h1 className="text-2xl font-bold text-white">{session?.user?.name}&apos;s Workspace</h1>
         </div>
 
         {/* 标签切换 */}

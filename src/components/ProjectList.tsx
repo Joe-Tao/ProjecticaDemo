@@ -1,9 +1,8 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, QuerySnapshot, DocumentData } from "firebase/firestore";
-import { db } from "@/firebase";
+
+import { QuerySnapshot, DocumentData } from "firebase/firestore";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";

@@ -51,7 +51,7 @@ const ChatPage = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <div className="flex-1 bg-gray-800/50 rounded-lg overflow-hidden">
-        <Chat id={projectId} onSaveToPlan={handleSaveToPlan} disableAutoScroll={true} />
+        <Chat id={projectId} onSaveToPlan={handleSaveToPlan} />
       </div>
       <div className="sticky bottom-0 left-0 right-0 bg-gray-800/50 backdrop-blur-sm py-4">
         <div className="max-w-7xl mx-auto px-4">

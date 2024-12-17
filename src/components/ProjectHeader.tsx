@@ -8,7 +8,6 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import toast from "react-hot-toast";
 import { IoMdClose } from "react-icons/io";
-import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import ContactVA from "./ContactVA";
 

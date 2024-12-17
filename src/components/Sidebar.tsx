@@ -14,11 +14,12 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const [projects, loading, error] = useCollection(
-    session &&
-      query(
-        collection(db, "users", session?.user?.email!, "projects"),
-        orderBy("createdAt", "desc")
-      )
+    session?.user?.email
+      ? query(
+          collection(db, "users", session.user.email, "projects"),
+          orderBy("createdAt", "desc")
+        )
+      : null 
   );
 
   const toggleSidebar = () => {

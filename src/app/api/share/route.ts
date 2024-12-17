@@ -48,13 +48,23 @@ export async function POST(req: Request) {
       message: "Project shared successfully"
     });
 
-  } catch (error: any) {
-    console.error("Error sharing project:", error);
-    return NextResponse.json(
-      { error: "Failed to share project" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error sharing project:", error);
+      return NextResponse.json(
+        { error: error.message || "Failed to share project" },
+        { status: 500 }
+      );
+    } else {
+      // 处理未知错误
+      console.error("Unknown error:", error);
+      return NextResponse.json(
+        { error: "Failed to share project" },
+        { status: 500 }
+      );
+    }
   }
+  
 }
 
 export async function GET(req: Request) {
@@ -94,11 +104,20 @@ export async function GET(req: Request) {
       shareData: shareData
     });
 
-  } catch (error: any) {
-    console.error("Error verifying access:", error);
-    return NextResponse.json(
-      { error: "Failed to verify access" },
-      { status: 500 }
-    );
-  }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+        console.error("Error verifying access:", error);
+        return NextResponse.json(
+            { error: "Failed to verify access" },
+            { status: 500 }
+        );
+    } else {
+        console.error("Error verifying access: Unknown error");
+        return NextResponse.json(
+            { error: "Failed to verify access" },
+            { status: 500 }
+        );
+    }
+}
+
 } 

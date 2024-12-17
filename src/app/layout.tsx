@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
