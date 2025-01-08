@@ -10,7 +10,7 @@ export default function About() {
             About Projectica
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            We're building the future of project management by combining human creativity with artificial intelligence.
+            We are building the future of project management by combining human creativity with artificial intelligence.
           </p>
         </div>
 
@@ -68,7 +68,7 @@ export default function About() {
             Our Team
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            We're a diverse team of engineers, designers, and project management experts 
+            We are a diverse team of engineers, designers, and project management experts 
             working together to build the best project management platform.
           </p>
         </div>
