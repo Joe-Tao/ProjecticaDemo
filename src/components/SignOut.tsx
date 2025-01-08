@@ -8,7 +8,7 @@ const SignOut = () => {
         await signOut()
       }}
     >
-      <button type="submit" className="text-sm text-gray-200 hover:text-white duration-300">Sign Out</button>
+      <button type="submit" className="text-sm text-black hover:text-black/50 duration-300">Sign Out</button>
     </form>
   )
 }

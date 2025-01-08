@@ -36,9 +36,12 @@ export default function RootLayout({
             {/* <div className="bg-black text-gray-300 max-w-[250px] h-screen overflow-y-auto md:min-w-[220px]">
               <Sidebar />
             </div> */}
-            <div className="bg-[#212121] text-gray-300 flex-1 h-screen overflow-hidden relative">
+            <div className="bg-white text-gray-300 flex-1 h-screen relative">
               <Header />
               {children}
+              <footer className="bg-white text-center text-black/50 text-sm p-4">
+                &copy; {new Date().getFullYear()} Projectica. All rights reserved.
+              </footer>
             </div>
           </div>
         </SessionProvider>
@@ -48,9 +51,7 @@ export default function RootLayout({
             color: "#ffffff",
           },
         }}/>
-        {/* <footer className="bg-black text-center text-gray-300 text-sm p-4">
-          &copy; {new Date().getFullYear()} Projectica. All rights reserved.
-        </footer> */}
+        
       </body>
       
     </html>

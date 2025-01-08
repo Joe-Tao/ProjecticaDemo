@@ -9,7 +9,7 @@ export default function ProjectLayout({
   params: { id: string };
 }) {
   return (
-    <div className="min-h-screen bg-[#212121] pt-16">
+    <div className="min-h-screen bg-gray-200 pt-16">
       <ProjectHeader projectId={params.id} />
       <Suspense fallback={<div>Loading...</div>}>
         <main className="mx-auto ">

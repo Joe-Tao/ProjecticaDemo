@@ -144,10 +144,9 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-[#212121] pt-16">
+    <div className="min-h-screen bg-white pt-16">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          {/* 头部背景和头像 */}
+        <div className="bg-gray-200 rounded-lg shadow-lg overflow-hidden">
           <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600">
             <div className="absolute -bottom-12 left-8">
               <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-gray-800">
@@ -170,12 +169,12 @@ export default function Profile() {
                     type="text"
                     value={editedProfile?.name || ""}
                     onChange={(e) => setEditedProfile(prev => ({ ...prev!, name: e.target.value }))}
-                    className="bg-gray-700 text-white px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="bg-gray-700 text-black px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 ) : (
-                  <h1 className="text-2xl font-bold text-white">{profile?.name}</h1>
+                  <h1 className="text-2xl font-bold text-black">{profile?.name}</h1>
                 )}
-                <div className="flex items-center gap-2 text-gray-400 mt-2">
+                <div className="flex items-center gap-2 text-black mt-2">
                   <FiMail className="w-4 h-4" />
                   <span>{profile?.email}</span>
                 </div>
@@ -189,26 +188,26 @@ export default function Profile() {
               </button>
             </div>
 
-            {/* 个人简介 */}
+            {/* Bio */}
             <div className="mb-6">
-              <h2 className="text-lg font-semibold text-white mb-2">Bio</h2>
+              <h2 className="text-lg font-semibold text-black mb-2">Bio</h2>
               {isEditing ? (
                 <textarea
                   value={editedProfile?.bio || ""}
                   onChange={(e) => setEditedProfile(prev => ({ ...prev!, bio: e.target.value }))}
-                  className="w-full h-32 bg-gray-700 text-white px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full h-32 bg-gray-200 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Tell us about yourself..."
                 />
               ) : (
-                <p className="text-gray-300">
+                <p className="text-black">
                   {profile?.bio || "No bio yet"}
                 </p>
               )}
             </div>
             
-            {/* 目前的项目 */}
+            {/* Projects */}
             <div className="mb-8">
-              <h2 className="text-lg font-semibold text-white mb-4">My Projects</h2>
+              <h2 className="text-lg font-semibold text-black mb-4">My Projects</h2>
               {projects.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {projects.map((project) => (
@@ -242,13 +241,13 @@ export default function Profile() {
               )}
             </div>
 
-            {/* 其他信息 */}
+            {/* Other information */}
             <div className="grid grid-cols-2 justify-between">
-              <div className="flex items-center gap-2 text-gray-400">
+              <div className="flex items-center gap-2 text-gray-800">
                 <FiUser className="w-4 h-4" />
                 <span>Role: {profile?.role}</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-400">
+              <div className="flex items-center gap-2 text-gray-800">
                 <FiCalendar className="w-4 h-4" />
                 <span>Joined: {new Date(profile?.joinedDate || "").toLocaleDateString()}</span>
               </div>

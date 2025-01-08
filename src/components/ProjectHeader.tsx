@@ -141,10 +141,8 @@ const ProjectHeader = ({ projectId }: Props) => {
             }
         } catch (error: unknown) {
             if (error instanceof Error) {
-                // 如果 error 是 Error 实例，则访问其 message 属性
                 toast.error(error.message || "Failed to send invitation");
             } else {
-                // 如果 error 不是 Error 实例，则进行其他处理
                 toast.error("An unknown error occurred while sending the invitation");
             }
         }
@@ -187,8 +185,7 @@ const ProjectHeader = ({ projectId }: Props) => {
     }
 
     return (
-        <div className="h-32 bg-[#1a1a1a] border-b border-gray-800">
-            {/* 上半部分：项目标题和成员 */}
+        <div className="h-32 bg-gray-200 border-b ">
             <div className="h-16 flex items-center justify-between px-6">
                 {isEditing ? (
                     <div className="flex items-center gap-2">
@@ -205,7 +202,7 @@ const ProjectHeader = ({ projectId }: Props) => {
                                     setProjectName(projectDoc?.data()?.name || "New Project");
                                 }
                             }}
-                            className="bg-gray-700 text-white px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="bg-gray-200 text-black px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             autoFocus
                         />
                         <button
@@ -228,7 +225,7 @@ const ProjectHeader = ({ projectId }: Props) => {
                     </div>
                 ) : (
                     <h1 
-                        className="text-xl font-semibold text-white cursor-pointer hover:bg-gray-700/50 px-3 py-1 rounded"
+                        className="text-xl font-semibold text-black cursor-pointer hover:bg-gray-500/50 px-3 py-1 rounded"
                         onClick={() => setIsEditing(true)}
                     >
                         {projectName}

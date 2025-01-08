@@ -29,19 +29,19 @@ const WorkspacePage = () => {
   );
 
   useEffect(() => {
-    // 检查登录状态
+    // Check login status
     if (status === 'unauthenticated') {
       toast.error("Please sign in to access workspace");
       router.push('/signin');
     }
   }, [status, router]);
 
-  // 如果正在加载，显示加载状态
+  // loading status
   if (status === 'loading') {
     return <div>Loading...</div>;
   }
 
-  // 如果未登录，不显示任何内容
+  // will not display anything is not login
   if (!session) {
     return (<div>Please sign in to access workspace</div>);
   }
@@ -59,14 +59,14 @@ const WorkspacePage = () => {
 }
 
   return (
-    <div className="min-h-screen bg-[#212121] pt-16">
+    <div className="min-h-screen bg-gray-200 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 工作区标题 */}
+        
         <div className="flex items-center justify-between py-4">
-          <h1 className="text-2xl font-bold text-white">{session?.user?.name}&apos;s Workspace</h1>
+          <h1 className="text-2xl font-bold text-black">{session?.user?.name}&apos;s Workspace</h1>
         </div>
 
-        {/* 标签切换 */}
+        
         <div className="flex space-x-4 mb-4">
           <button
             onClick={() => setActiveTab('projects')}
@@ -81,36 +81,36 @@ const WorkspacePage = () => {
           </button>
         </div>
 
-        {/* 内容区域 */}
-        <div className="bg-gray-800 rounded-lg p-4">
+       
+        <div className="bg-gray-200 rounded-lg p-4">
           {loading ? (
             <div className="text-center text-gray-400 py-8">Loading projects...</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* 新建项目卡片 */}
+              
               <Link
                 href="#"
                 onClick={createNewProject}
-                className="bg-gray-700/50 rounded-lg p-6 hover:bg-gray-700 transition-colors flex flex-col items-center justify-center min-h-[200px] border-2 border-dashed border-gray-600 hover:border-blue-500 group"
+                className="bg-gray-400/50 rounded-lg p-6 hover:bg-gray-300 transition-colors flex flex-col items-center justify-center min-h-[200px] border-2 border-dashed border-gray-600 hover:border-blue-500 group"
               >
-                <FiPlus className="text-4xl text-gray-400 group-hover:text-blue-500 mb-2" />
-                <span className="text-gray-400 group-hover:text-blue-500">Create New Project</span>
+                <FiPlus className="text-4xl text-black group-hover:text-blue-500 mb-2" />
+                <span className="text-black group-hover:text-blue-500">Create New Project</span>
               </Link>
 
-              {/* 现有项目列表 */}
+              
               {projects?.docs.map((project) => (
                 <Link
                   key={project.id}
                   href={`/project/${project.id}`}
-                  className="bg-gray-700/50 rounded-lg p-6 hover:bg-gray-700 transition-colors"
+                  className="bg-gray-400/50 rounded-lg p-6 hover:bg-gray-300 transition-colors"
                 >
                   <div className="flex items-center space-x-3 mb-4">
                     <AiOutlineProject className="text-2xl text-blue-500" />
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-lg font-semibold text-black">
                       {project.data().name || "New Project"}
                     </h3>
                   </div>
-                  <div className="text-sm text-gray-400">
+                  <div className="text-sm text-gray-800">
                     Created: {project.data().createdAt?.toDate().toLocaleDateString()}
                   </div>
                 </Link>

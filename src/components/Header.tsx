@@ -7,28 +7,34 @@ import SignOut from "./SignOut";
 const Header = async () => {
   const session = await auth()
   return (
-    <div className="fixed top-0 left-0 right-0 bg-[#1a1a1a] border-b border-gray-800 z-50">
+    <div className="fixed top-0 left-0 right-0 bg-white/80 border-gray-800 z-50">
       <div className="flex justify-between items-center h-16 px-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-4">
           <Link 
             href="/"
-            className="text-gray-300 font-serif text-3xl flex items-center gap-1 hover:text-white font-semibold tracking-wide px-3 py-2 rounded-lg duration-300"
+            className="text-black font-serif text-3xl flex items-center gap-1 hover:text-black/50 font-semibold tracking-wide px-3 py-2 rounded-lg duration-300"
           >
             Projectica
           </Link>
 
           <Link
             href="/solutions"
-            className="text-gray-300 hover:text-white px-3 py-2 rounded-lg duration-300 text-sm font-medium"
+            className="text-black hover:text-black/50 px-3 py-2 rounded-lg duration-300 text-sm font-medium"
           >
-            Solutions
+            Features
           </Link>
 
           <Link
             href="/workspace"
-            className="text-gray-300 hover:text-white px-3 py-2 rounded-lg duration-300 text-sm font-medium"
+            className="text-black hover:text-black/50 px-3 py-2 rounded-lg duration-300 text-sm font-medium"
           >
             Workspace
+          </Link>
+          <Link
+            href="/about"
+            className="text-black hover:text-black/50 px-3 py-2 rounded-lg duration-300 text-sm font-medium"
+          >
+            About
           </Link>
         </div>
 
@@ -46,7 +52,7 @@ const Header = async () => {
                   />
                 </div>
               </Link>
-              <span className="text-gray-300 text-sm hidden md:block">
+              <span className="text-black text-sm hidden md:block">
                   {session.user.name}
               </span>
                 

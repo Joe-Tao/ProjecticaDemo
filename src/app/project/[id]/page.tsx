@@ -38,7 +38,7 @@ export default function ProjectPage() {
       if (!session?.user?.email) return;
 
       try {
-        // 获取项目数据
+        // Fetching project data
         const sectionsRef = doc(db, "users", session.user.email, "projects", projectId, "sections", "data");
         const sectionsDoc = await getDoc(sectionsRef);
         
@@ -57,7 +57,7 @@ export default function ProjectPage() {
           });
           
 
-          // 获取成员数据
+          // fetching member data
           const membersRef = doc(db, "users", session.user.email, "projects", projectId, "members", "list");
           const membersDoc = await getDoc(membersRef);
           const members = membersDoc.exists() ? (membersDoc.data().members || []).length : 1;

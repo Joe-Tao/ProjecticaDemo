@@ -29,7 +29,7 @@ const Message = ({ message, onSaveToPlan }: Props) => {
         >
           <p
             className={`${
-              isProjectica ? "bg-[#85313130]" : "bg-[#2F2F2F]"
+              isProjectica ? "bg-black" : "bg-black"
             } px-4 py-2 rounded-lg shadow-sm text-base font-medium tracking-wide whitespace-pre-wrap`}
           >
             {message?.text}

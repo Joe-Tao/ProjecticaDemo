@@ -30,12 +30,12 @@ const ChatPage = () => {
         currentContent = planDoc.data().content || "";
       }
 
-      // 将消息添加到计划末尾，添加项目符号
+      // Add new messeges 
       const newContent = currentContent + 
         (currentContent ? "\n\n" : "") + 
         `• ${messageText}`;
 
-      // 保存更新后的计划
+      // save plan
       await setDoc(planRef, {
         content: newContent,
         lastUpdated: new Date().toISOString(),
@@ -50,7 +50,7 @@ const ChatPage = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <div className="flex-1 bg-gray-800/50 rounded-lg overflow-hidden">
+      <div className="flex-1 bg-white rounded-lg overflow-hidden">
         <Chat id={projectId} onSaveToPlan={handleSaveToPlan} />
       </div>
       <div className="sticky bottom-0 left-0 right-0 bg-gray-800/50 backdrop-blur-sm py-4">
