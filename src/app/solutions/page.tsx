@@ -1,86 +1,121 @@
 import React from 'react';
 import Link from 'next/link';
+import { BiBrain } from 'react-icons/bi';
+import { HiOutlineLightningBolt } from 'react-icons/hi';
+import { TbChartDots } from 'react-icons/tb';
 
-interface UseCase {
+interface Feature {
   title: string;
   description: string;
-  icon: string;
+  details: string[];
+  icon: React.ReactNode;
   link: string;
 }
 
-const useCases: UseCase[] = [
+const features: Feature[] = [
   {
-    title: "Digital Marketing",
-    description: "Create comprehensive digital marketing strategies. From social media campaigns to SEO optimization and content marketing planning.",
-    icon: "📱",
-    link: "/solutions/digital-marketing"
+    title: "AI-Enhanced Planning",
+    description: "Leverage artificial intelligence to create data-driven marketing strategies and campaign plans.",
+    details: [
+      "Smart campaign structure recommendations",
+      "AI-powered audience targeting",
+      "Content strategy optimization",
+      "Budget allocation insights"
+    ],
+    icon: <BiBrain className="w-8 h-8" />,
+    link: "/solutions/planning"
   },
   {
-    title: "Project Management",
-    description: "Plan and manage your projects with AI assistance. Get help with task breakdown, timeline estimation, and resource allocation.",
-    icon: "📊",
-    link: "/solutions/project-management"
+    title: "Campaign Execution",
+    description: "Streamline your campaign execution with AI assistance and automated workflows.",
+    details: [
+      "Automated campaign deployment",
+      "Real-time performance monitoring",
+      "Smart A/B testing",
+      "Dynamic content optimization"
+    ],
+    icon: <HiOutlineLightningBolt className="w-8 h-8" />,
+    link: "/solutions/execution"
   },
   {
-    title: "Event Planning",
-    description: "Organize events efficiently with AI-powered planning tools. From venue selection to guest management and timeline coordination.",
-    icon: "🎉",
-    link: "/solutions/event-planning"
-  },
-  {
-    title: "Product Launch",
-    description: "Launch your products successfully with comprehensive planning. Cover marketing, distribution, and customer feedback strategies.",
-    icon: "🚀",
-    link: "/solutions/product-launch"
-  },
-  {
-    title: "Content Creation",
-    description: "Plan your content strategy and creation pipeline. Get help with content ideation, scheduling, and distribution planning.",
-    icon: "✍️",
-    link: "/solutions/content-creation"
-  },
-  {
-    title: "Research Project",
-    description: "Plan and organize research projects efficiently. Get help with methodology planning, data collection, and analysis strategies.",
-    icon: "🔬",
-    link: "/solutions/research"
+    title: "Performance Analytics",
+    description: "Get deep insights into your campaign performance with advanced analytics and AI predictions.",
+    details: [
+      "Real-time performance dashboards",
+      "Predictive analytics",
+      "Custom reporting automation",
+      "ROI tracking and optimization"
+    ],
+    icon: <TbChartDots className="w-8 h-8" />,
+    link: "/solutions/analytics"
   }
 ];
 
 const SolutionsPage = () => {
   return (
-    <div className="min-h-screen bg-gray-900 text-white py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-black py-20 px-4">
+      <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-4">Solutions</h1>
-          <p className="text-gray-400 text-lg">
-            Explore our use cases and find the perfect solution for your needs
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            Core Features
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Discover how our AI-powered platform transforms your marketing campaigns
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {useCases.map((useCase, index) => (
-            <Link 
-              href={useCase.link} 
+        <div className="space-y-20">
+          {features.map((feature, index) => (
+            <div 
               key={index}
-              className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors duration-300"
+              className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="text-4xl mb-4">{useCase.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{useCase.title}</h3>
-              <p className="text-gray-400">{useCase.description}</p>
-            </Link>
+              <div className="grid md:grid-cols-2 gap-12">
+                <div className="space-y-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600">
+                    {feature.icon}
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {feature.title}
+                  </h2>
+                  <p className="text-lg text-gray-600 dark:text-gray-300">
+                    {feature.description}
+                  </p>
+                  <ul className="space-y-3">
+                    {feature.details.map((detail, i) => (
+                      <li key={i} className="flex items-center text-gray-600 dark:text-gray-300">
+                        <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link 
+                    href={feature.link}
+                    className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    Learn more 
+                    <span className="ml-2">→</span>
+                  </Link>
+                </div>
+                <div className="relative h-[300px] bg-gray-100 dark:bg-gray-700 rounded-xl">
+                  {/* Placeholder for feature illustration/screenshot */}
+                </div>
+              </div>
+            </div>
           ))}
         </div>
 
-        <div className="mt-16 text-center">
-          <p className="text-gray-400">
-            Can&quot;t find what you&apos;re looking for?{' '}
-            <Link href="/project/new" className="text-blue-400 hover:text-blue-300">
-              Start a custom project
+        <div className="mt-20 text-center">
+          <p className="text-gray-600 dark:text-gray-300">
+            Ready to transform your marketing campaigns?{' '}
+            <Link 
+              href="/workspace" 
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Get started now
             </Link>
           </p>
-      </div>
-
+        </div>
       </div>
     </div>
   );

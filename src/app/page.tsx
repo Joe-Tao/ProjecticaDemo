@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -16,12 +17,12 @@ export default function Home() {
             Empowering digital marketers to plan, execute, and launch successful campaigns
           </p>
           <div className="flex gap-4 flex-col sm:flex-row">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg">
+            <Link href="/workspace" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg">
               Get Started
-            </button>
-            <button className="bg-gray-300 text-black dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-8 py-3 rounded-full text-lg">
+            </Link>
+            <Link href="/about" className="bg-gray-300 text-black dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-8 py-3 rounded-full text-lg">
               Learn more →
-            </button>
+            </Link>
           </div>
         </section>
 
@@ -49,7 +50,7 @@ export default function Home() {
           <section 
             key={index}
             className={`min-h-screen flex items-center ${
-              index % 2 === 0 ? 'bg-white dark:bg-black' : 'bg-gray-50 dark:bg-gray-900'
+              index % 2 === 0 ? 'bg-gray-50 dark:bg-black' : 'bg-white dark:bg-gray-900'
             }`}
           >
             <div className="max-w-7xl mx-auto px-4 py-20 w-full grid md:grid-cols-2 gap-12 items-center">
