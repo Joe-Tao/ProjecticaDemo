@@ -1,13 +1,12 @@
 import { DocumentData } from "firebase/firestore";
 import Image from "next/image";
 import React from "react";
-import SavePlanButton from "./SavePlanButton";
 interface Props {
   message: DocumentData;
   onSaveToPlan?: (text: string) => void;
 }
 
-const Message = ({ message, onSaveToPlan }: Props) => {
+const Message = ({ message }: Props) => {
   const isProjectica = message.user.name === "Projectica";
   return (
     <div className={`py-5 text-white `}>

@@ -1,11 +1,6 @@
 import Chat from "@/components/Chat";
-import ChatHelp from "@/components/ChatHelp";
 import ChatInput from "@/components/ChatInput";
-import { db } from "@/firebase";
-import { getDoc } from "firebase/firestore";
-import { doc, setDoc } from "firebase/firestore";
 import { useParams } from "next/navigation";
-import { toast } from "react-hot-toast";
 
 
 

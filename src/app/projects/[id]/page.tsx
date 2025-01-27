@@ -5,9 +5,8 @@ import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { BsLightningCharge, BsArrowRight, BsPencilSquare } from 'react-icons/bs';
 import { RiEditLine } from "react-icons/ri";
-import { AiOutlineSchedule, AiOutlineSave, AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineSave, AiOutlineClose } from 'react-icons/ai';
 import toast from 'react-hot-toast';
 import ProjectDisplay from '@/projectsComponents/projectDisplay';
 import ProjectLayout from '@/projectsComponents/ProjectLayout';
@@ -143,7 +142,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                         Project not found
                     </h1>
                     <p className="text-gray-600 dark:text-gray-300">
-                        The project you're looking for doesn't exist or you don't have access to it.
+                        The project you are looking for does not exist or you do not have access to it.
                     </p>
                 </div>
             </div>
