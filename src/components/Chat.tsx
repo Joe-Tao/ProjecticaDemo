@@ -6,7 +6,6 @@ import { useSession } from "next-auth/react";
 import React, { useRef } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Message from "./Message";
-import ChatHelp from "./ChatHelp";
 
 interface ChatProps {
     id?: string;
