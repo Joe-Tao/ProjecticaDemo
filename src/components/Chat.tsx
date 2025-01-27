@@ -27,7 +27,7 @@ const Chat = ({ id, onSaveToPlan }: ChatProps) => {
     );
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-[calc(100vh-8rem)]">
             <div className="flex-1 overflow-y-auto">
                 <div className="px-4 py-2 pb-24">
                     {messages?.empty ? (
