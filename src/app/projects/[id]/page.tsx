@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { RiEditLine } from "react-icons/ri";
 import { AiOutlineSave, AiOutlineClose } from 'react-icons/ai';
 import toast from 'react-hot-toast';
-import ProjectDisplay from '@/projectsComponents/projectDisplay';
 import ProjectLayout from '@/projectsComponents/ProjectLayout';
 
 interface Project {
