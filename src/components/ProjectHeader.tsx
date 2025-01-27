@@ -39,6 +39,12 @@ const ProjectHeader = ({ projectId }: Props) => {
             path: `/project/${projectId}`
         },
         {
+            id: 'plan',
+            name: 'Plan',
+            icon: <FiFileText className="w-4 h-4" />,
+            path: `/project/${projectId}/plan`
+        },
+        {
             id: 'chat',
             name: 'Chat',
             icon: <FiMessageSquare className="w-4 h-4" />,

@@ -36,6 +36,12 @@ const Header = async () => {
           >
             About
           </Link>
+          {/* <Link
+            href="/test"
+            className="text-black hover:text-black/50 px-3 py-2 rounded-lg duration-300 text-sm font-medium"
+          >
+            Test
+          </Link> */}
         </div>
 
         {session?.user ? (

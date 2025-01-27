@@ -5,16 +5,17 @@ module.exports = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       typography: {
         DEFAULT: {
           css: {
-            color: '#fff',
+            color: '#374151',
             a: {
-              color: '#3b82f6',
+              color: '#2563eb',
               '&:hover': {
-                color: '#60a5fa',
+                color: '#1d4ed8',
               },
             },
             h1: {

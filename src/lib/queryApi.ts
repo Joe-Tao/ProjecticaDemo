@@ -37,27 +37,27 @@ Participants
 
 const query = async(prompt: string, projectId: string, model: string, userEmail: string) => {
     try {
-        // 从 Firestore 获取历史消息
+        // Fetch history messages from Firestore 
         const messagesRef = collection(db, "users", userEmail, "projects", projectId, "messages");
         const q = firestoreQuery(messagesRef, orderBy("createdAt", "asc"));
         const querySnapshot = await getDocs(q);
         
-        // 构建对话历史，修复类型问题
+        
         const history = querySnapshot.docs.map(doc => {
             const data = doc.data();
             return {
                 role: data.user._id === "Projectica" ? "assistant" as const : "user" as const,
                 content: data.text
             };
-        }).slice(-5); // 只保留最近的5条消息
+        }).slice(-5); // only save the 5 recently messages
 
-        // 系统提示词
+        // system message
         const systemMessage = {
             role: "system" as const,
             content: `You are Projectica, an AI assistant specialized in project planning and management. Your task is to gather detailed information about the user's project. Ask relevant questions one at a time to understand the project's scope, goals, timeline, resources, and any other important aspects. We can always provide with a project plan when user asks for it. The project plan MUST strictly follow this format: ${planFormat}. Remember to maintain context from previous messages in the conversation.`,
         };
 
-        // 创建 OpenAI 请求，包含历史消息
+        // create OpenAI request, including history 
         const res = await openai.chat.completions.create({
             model: model || "gpt-3.5-turbo",
             messages: [
@@ -80,7 +80,7 @@ const query = async(prompt: string, projectId: string, model: string, userEmail:
     } catch (err: unknown) {
         if (err instanceof Error) {
           console.error("Query Error:", err);
-          throw err; // 向上抛出错误以便更好地处理
+          throw err; 
         } else {
           console.error("Unknown error:", err);
           throw new Error("An unknown error occurred");

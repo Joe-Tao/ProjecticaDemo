@@ -53,10 +53,10 @@ const features: Feature[] = [
 
 const SolutionsPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-black py-20 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
+      <div className="max-w-6xl mx-auto px-4 py-20">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
             Core Features
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -64,15 +64,15 @@ const SolutionsPage = () => {
           </p>
         </div>
 
-        <div className="space-y-20">
+        <div className="space-y-12">
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8 shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-800"
             >
               <div className="grid md:grid-cols-2 gap-12">
                 <div className="space-y-6">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-blue-100/10 dark:bg-blue-900/20 text-blue-500">
                     {feature.icon}
                   </div>
                   <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -84,20 +84,20 @@ const SolutionsPage = () => {
                   <ul className="space-y-3">
                     {feature.details.map((detail, i) => (
                       <li key={i} className="flex items-center text-gray-600 dark:text-gray-300">
-                        <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
                         {detail}
                       </li>
                     ))}
                   </ul>
                   <Link 
                     href={feature.link}
-                    className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+                    className="inline-flex items-center text-blue-500 hover:text-blue-400 font-medium"
                   >
                     Learn more 
                     <span className="ml-2">→</span>
                   </Link>
                 </div>
-                <div className="relative h-[300px] bg-gray-100 dark:bg-gray-700 rounded-xl">
+                <div className="relative h-[300px] bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden">
                   {/* Placeholder for feature illustration/screenshot */}
                 </div>
               </div>
@@ -110,7 +110,7 @@ const SolutionsPage = () => {
             Ready to transform your marketing campaigns?{' '}
             <Link 
               href="/workspace" 
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-blue-500 hover:text-blue-400 font-medium"
             >
               Get started now
             </Link>

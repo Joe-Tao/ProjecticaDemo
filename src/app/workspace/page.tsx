@@ -55,7 +55,7 @@ const WorkspacePage = () => {
         createdAt: serverTimestamp(),
       }
   )
-    router.push(`/project/${doc?.id}`);
+    router.push(`/projects/${doc?.id}`);
 }
 
   return (
@@ -101,7 +101,7 @@ const WorkspacePage = () => {
               {projects?.docs.map((project) => (
                 <Link
                   key={project.id}
-                  href={`/project/${project.id}`}
+                  href={`/projects/${project.id}`}
                   className="bg-gray-400/50 rounded-lg p-6 hover:bg-gray-300 transition-colors"
                 >
                   <div className="flex items-center space-x-3 mb-4">
