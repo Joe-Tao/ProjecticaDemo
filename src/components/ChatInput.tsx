@@ -93,7 +93,7 @@ const ChatInput = ({id}:{ id?: string }) => {
       <form
         onSubmit={sendMessage}
         action=""
-        className="bg-white/10 rounded-full flex items-center px-4 py-2.5 w-full"
+        className="bg-black/10 rounded-full flex items-center px-4 py-2.5 w-full"
       >
         <TbPaperclip className="text-2xl text-gray-400 hover:text-white cursor-pointer" onClick={handleAttachment}/>
         <input
@@ -101,7 +101,7 @@ const ChatInput = ({id}:{ id?: string }) => {
           placeholder="Message Projectica"
           onChange={(e) => setPrompt(e.target.value)}
           value={prompt}
-          className="bg-transparent text-white placeholder:text-gray-400 px-3 outline-none w-full font-medium tracking-wide"
+          className="bg-transparent text-black placeholder:text-gray-400 px-3 outline-none w-full font-medium tracking-wide"
         />
         <button type="submit" disabled={!prompt} className="p-2.5 rounded-full text-black bg-gray-300 disabled:bg-gray-500 hover:bg-white">
           <TbSend  className="text-sm text-black "/>
