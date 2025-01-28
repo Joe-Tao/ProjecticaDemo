@@ -39,7 +39,7 @@ const query = async (prompt: string, projectId: string, model: string, userEmail
     try {
         // 1. Fetch chat history from Firestore
         const messagesRef = collection(db, "users", userEmail, "projects", projectId, "messages");
-        const q = firestoreQuery(messagesRef, orderBy("createdAt", "desc"), limit(10 ));
+        const q = firestoreQuery(messagesRef, orderBy("createdAt", "desc"), limit(5));
         const querySnapshot = await getDocs(q);
 
         // Map Firestore documents to OpenAI-compatible messages
