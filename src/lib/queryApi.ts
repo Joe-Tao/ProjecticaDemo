@@ -1,6 +1,6 @@
 import openai from "./chatgpt";
 import { db } from "@/firebase";
-import { collection, getDocs, orderBy, query as firestoreQuery} from "firebase/firestore";
+import { collection, getDocs, orderBy, query as firestoreQuery, limit} from "firebase/firestore";
 
 const planFormat = `
     The project plan MUST strictly follow this format:
@@ -39,7 +39,7 @@ const query = async (prompt: string, projectId: string, model: string, userEmail
     try {
         // 1. Fetch chat history from Firestore
         const messagesRef = collection(db, "users", userEmail, "projects", projectId, "messages");
-        const q = firestoreQuery(messagesRef, orderBy("createdAt", "asc"));
+        const q = firestoreQuery(messagesRef, orderBy("createdAt", "desc"), limit(10 ));
         const querySnapshot = await getDocs(q);
 
         // Map Firestore documents to OpenAI-compatible messages
@@ -80,19 +80,6 @@ const query = async (prompt: string, projectId: string, model: string, userEmail
         if (!assistantMessage) {
             throw new Error("No response from OpenAI");
         }
-
-        // 4. Save the new messages to Firestore
-        // await addDoc(messagesRef, {
-        //     text: prompt,
-        //     user: { _id: userEmail },
-        //     createdAt: serverTimestamp(),
-        // });
-
-        // await addDoc(messagesRef, {
-        //     text: assistantMessage,
-        //     user: { _id: "Projectica" },
-        //     createdAt: serverTimestamp(),
-        // });
 
         return assistantMessage;
     } catch (err: unknown) {
