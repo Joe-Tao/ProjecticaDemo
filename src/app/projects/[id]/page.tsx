@@ -31,7 +31,7 @@ const formatDate = (timestamp: Timestamp | null | undefined) => {
 
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
-    const { data: session } = useSession();
+    const { data: session, status} = useSession();
     const [project, setProject] = useState<Project | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState('');
@@ -39,11 +39,11 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
 
     useEffect(() => {
         const fetchProject = async () => {
-            if (!session?.user?.email) {
+            if (status !== 'authenticated' || !session?.user?.email) {
                 setLoading(false);
                 return;
             }
-
+            setLoading(true);
             try {
                 const projectRef = doc(db, "users", session.user.email, "projects", resolvedParams.id);
                 const projectSnap = await getDoc(projectRef);
@@ -60,20 +60,13 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                     setProject(formattedProject);
                     setEditedName(formattedProject.name);
                 } else {
+                    setProject(null);
                     throw new Error('Project not found');
                 }
             } catch (error) {
                 console.error('Error fetching project:', error);
                 toast.error('Failed to load project');
-                
-                const defaultProject: Project = {
-                    id: resolvedParams.id,
-                    name: 'Untitled Project',
-                    description: '',
-                    createdAt: Timestamp.now(),
-                };
-                setProject(defaultProject);
-                setEditedName(defaultProject.name);
+                setProject(null);
             } finally {
                 setLoading(false);
             }
@@ -104,7 +97,15 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
         }
     };
 
-    if (!session) {
+    if (status === 'loading') {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
+
+    if (status === 'unauthenticated') {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
@@ -158,6 +159,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                                 type="text"
                                 value={editedName}
                                 onChange={(e) => setEditedName(e.target.value)}
+                                placeholder={project?.name || 'Untitled Project'}  
                                 className="text-3xl md:text-4xl font-bold text-center bg-transparent border-b-2 border-blue-600 dark:text-white focus:outline-none focus:border-blue-700 px-2 py-1"
                                 autoFocus
                             />
@@ -188,7 +190,12 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                             </h1>
                            
                             <button
-                                onClick={() => setIsEditing(true)}
+                                onClick={() => {
+                                    setIsEditing(true);
+                                    setEditedName("")
+                                    }
+                                 }
+                                
                                 className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                                 <RiEditLine className="w-7 h-7 text-gray-400 hover:text-gray-600" />

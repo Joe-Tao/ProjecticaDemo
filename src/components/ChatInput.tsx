@@ -5,7 +5,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { TbPaperclip, TbSend } from "react-icons/tb";
+import { TbSend } from "react-icons/tb";
+import { MdOutlineTipsAndUpdates } from "react-icons/md";
+
 
 const ChatInput = ({id}:{ id?: string }) => {
   const [prompt, setPrompt] = useState("");
@@ -83,10 +85,6 @@ const ChatInput = ({id}:{ id?: string }) => {
     }
   } 
 
-  const handleAttachment = () => {
-    console.log("Attachment clicked");
-  };
-  console.log(loading)
   
   return (
     <div className="flex flex-col items-center justify-center mx-auto pt-3 px-4 w-full">
@@ -95,7 +93,7 @@ const ChatInput = ({id}:{ id?: string }) => {
         action=""
         className="bg-black/10 rounded-full flex items-center px-4 py-2.5 w-full"
       >
-        <TbPaperclip className="text-2xl text-gray-400 hover:text-white cursor-pointer" onClick={handleAttachment}/>
+        <MdOutlineTipsAndUpdates className="text-2xl text-gray-400 hover:text-black cursor-pointer" onClick={() => setPrompt("Please generate a plan for me based on the current information")}/>
         <input
           type="text"
           placeholder="Message Projectica"

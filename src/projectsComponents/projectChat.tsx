@@ -1,4 +1,5 @@
 import Chat from "@/components/Chat";
+import ChatHelp from "@/components/ChatHelp";
 import ChatInput from "@/components/ChatInput";
 import { useParams } from "next/navigation";
 

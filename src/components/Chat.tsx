@@ -32,7 +32,7 @@ const Chat = ({ id, onSaveToPlan }: ChatProps) => {
                 <div className="px-4 py-2 pb-24">
                     {messages?.empty ? (
                         <div className="flex items-center justify-center min-h-[400px]">
-                           <p>Start chating now!</p>
+                           <p>What type of marketing plan do you want to create? Try to chat!</p>
                         </div>
                     ) : (
                         <>

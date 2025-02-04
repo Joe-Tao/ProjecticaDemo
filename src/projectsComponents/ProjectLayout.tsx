@@ -12,7 +12,7 @@ interface ProjectLayoutProps {
 }
 
 export default function ProjectLayout({ projectId }: ProjectLayoutProps) {
-  const [activeSection, setActiveSection] = useState<'none' | 'chat' | 'tasks'>('none');
+  const [activeSection, setActiveSection] = useState<'none' | 'chat' | 'tasks'>('chat');
 
   const slideVariants = {
     enterFromLeft: {
