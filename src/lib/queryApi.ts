@@ -2,42 +2,46 @@ import openai from "./chatgpt";
 import { db } from "@/firebase";
 import { collection, getDocs, orderBy, query as firestoreQuery, limit} from "firebase/firestore";
 
-const planFormat = `
-    The project plan MUST strictly follow this format:
+// const planFormat = `
+//     The project plan MUST strictly follow this format:
 
-Project Plan - [Project Title]
+// Project Plan - [Project Title]
 
-Overview
-[Provide a brief overview of the project, its goals, and its significance]
+// Overview
+// [Provide a brief overview of the project, its goals, and its significance]
 
-Outline
+// Outline
 
-Steps:
-    1. [Step description]
-        Description: [Detailed description of the step]
-        [Description could start from who will do the work, and how to do the work]
-        Time: [Estimated time]
-        [Add sub-steps]
+// Steps:
+//     1. [Step description]
+//         Description: [Detailed description of the step]
+//         [Description could start from who will do the work, and how to do the work]
+//         Time: [Estimated time]
+//         [Add sub-steps]
 
-    2. [Step description]
-        Description: [Detailed description of the step]
-        [Description could start from who will do the work, and how to do the work]
-        Time: [Estimated time]
-        [Add sub-steps]
+//     2. [Step description]
+//         Description: [Detailed description of the step]
+//         [Description could start from who will do the work, and how to do the work]
+//         Time: [Estimated time]
+//         [Add sub-steps]
 
-    [Add more steps as needed]
+//     [Add more steps as needed]
 
-Resources
-[List any necessary resources, tools, or references needed for this section/phase]
+// Resources
+// [List any necessary resources, tools, or references needed for this section/phase]
 
-Participants
-- Virtual Assistant (if needed): [Overall role in the project]
-- Product Owner (if needed): [Overall role in the project]
-`;
+// Participants
+// - Virtual Assistant (if needed): [Overall role in the project]
+// - Product Owner (if needed): [Overall role in the project]
+// `;
 
 
-const prompt = `
-You are a project planning agent, tasked to talk with a client to help them create a project plan.
+
+
+
+const query = async (prompt: string, projectId: string, model: string, userEmail: string) => {
+    const systemPrompt = `
+You are a project planning agent, tasked to talk with a client to help them create a project plan, but currently you are also professional as a digital marketer.
 
 The project plan will then be executed by virtual assistants.
 
@@ -121,9 +125,6 @@ Expected Outcome:
 
 
 Here is the first message from the user:`
-
-
-const query = async (prompt: string, projectId: string, model: string, userEmail: string) => {
     try {
         // 1. Fetch chat history from Firestore
         console.time("Step 1: Fetch chat history");
@@ -158,7 +159,7 @@ const query = async (prompt: string, projectId: string, model: string, userEmail
         // 2. Create the system message
         const systemMessage = {
             role: "system" as const,
-            content: prompt,
+            content: systemPrompt,
         };
         console.timeEnd("Step 2: Create system message");
 

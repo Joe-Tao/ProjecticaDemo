@@ -18,6 +18,7 @@ const ChatInput = ({id}:{ id?: string }) => {
   const userEmail = session?.user ? (session?.user?.email as string) : "unknown";
 
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log(loading)
     e.preventDefault();
     if(!prompt) return;
     const input = prompt.trim();
