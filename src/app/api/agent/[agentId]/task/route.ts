@@ -3,16 +3,7 @@ import { NextResponse } from 'next/server'
 import { auth } from "@/auth"
 import { db } from '@/firebase'
 import { doc, getDoc } from 'firebase/firestore'
-
-interface Agent {
-  id: string;
-  name: string;
-  description: string;
-  model: string;
-  instructions: string;
-  isSystem?: boolean;
-  userId?: string;
-}
+import { Agent } from '@/config/systemAgents'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -20,7 +11,7 @@ const openai = new OpenAI({
 
 export async function POST(
   req: Request,
-  { params }: { params: { agentId: string } }
+  context: { params: { agentId: string } }
 ) {
   try {
     const session = await auth()
@@ -32,8 +23,9 @@ export async function POST(
     if (!input || !taskId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
-    const {agentId} = await params
-    // Recieve agent information
+
+    const { agentId } = context.params
+    // Receive agent information
     let agent: Agent;
     const agentDoc = await getDoc(doc(db, "users", session.user.email, "agents", agentId))
     if (!agentDoc.exists()) {
@@ -65,7 +57,7 @@ export async function POST(
   } catch (error) {
     console.error('Error in agent task API:', error)
     return NextResponse.json(
-      { error: error|| "Something went wrong" },
+      { error: error || "Something went wrong" },
       { status: 500 }
     )
   }
