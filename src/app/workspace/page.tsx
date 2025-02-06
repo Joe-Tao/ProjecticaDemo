@@ -81,6 +81,16 @@ const WorkspacePage = () => {
           </button>
         </div>
 
+        {/* link to agents */}
+        <div className="flex space-x-4 mb-4">
+          <Link
+              href="/agent"
+              className="text-black hover:text-black/50 px-3 py-2 rounded-lg duration-300 text-sm font-medium"
+            >
+              Your Agents
+            </Link>
+        </div>
+
        
         <div className="bg-gray-200 rounded-lg p-4">
           {loading ? (

@@ -122,7 +122,7 @@ Expected Outcome:
 - Sustainable marketing strategies that can be refined and expanded further.
 
 ---
-
+Please return plain text without Markdown formatting.
 
 Here is the first message from the user:`
     try {
