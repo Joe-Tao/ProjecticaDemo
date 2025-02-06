@@ -5,14 +5,13 @@ import { db } from '@/firebase'
 import { doc, getDoc } from 'firebase/firestore'
 import { Agent } from '@/config/systemAgents'
 
+// 初始化 OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function POST(
-  req: Request,
-  context: { params: { agentId: string } }
-) {
+// 修正 API Handler
+export async function POST(req: Request, { params }: { params: { agentId: string } }) {
   try {
     const session = await auth()
     if (!session?.user?.email) {
@@ -24,12 +23,13 @@ export async function POST(
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const { agentId } = context.params
-    // Receive agent information
-    let agent: Agent;
+    const { agentId } = await params  // 这里改为从 params 获取
+
+    // 获取用户定义的 agent
+    let agent: Agent
     const agentDoc = await getDoc(doc(db, "users", session.user.email, "agents", agentId))
     if (!agentDoc.exists()) {
-      // If can not find agents, go to system agents
+      // 如果找不到，尝试获取系统预设的 agent
       const systemAgentDoc = await getDoc(
         doc(db, "users", session.user.email, "system_agents", agentId)
       )
@@ -41,6 +41,7 @@ export async function POST(
       agent = { id: agentDoc.id, ...agentDoc.data() } as Agent
     }
 
+    // 生成 AI 任务响应
     const completion = await openai.chat.completions.create({
       model: agent.model === 'gpt-4o' ? 'gpt-4' : agent.model,
       messages: [
@@ -61,4 +62,4 @@ export async function POST(
       { status: 500 }
     )
   }
-} 
+}
