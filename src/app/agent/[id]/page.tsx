@@ -102,7 +102,8 @@ export default function TestAgentPage() {
         throw new Error(data.error)
       }
     } catch (error) {
-      toast.error('Failed to get response')
+      console.error(error)
+      toast.error('Failed to get response:')
     } finally {
       setLoading(false)
     }

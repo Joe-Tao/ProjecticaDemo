@@ -34,6 +34,7 @@ export async function POST(
     }
     const {agentId} = await params
     // Recieve agent information
+    let agent: Agent;
     const agentDoc = await getDoc(doc(db, "users", session.user.email, "agents", agentId))
     if (!agentDoc.exists()) {
       // If can not find agents, go to system agents
@@ -43,9 +44,9 @@ export async function POST(
       if (!systemAgentDoc.exists()) {
         return NextResponse.json({ error: "Agent not found" }, { status: 404 })
       }
-      var agent = { id: systemAgentDoc.id, ...systemAgentDoc.data() } as Agent
+      agent = { id: systemAgentDoc.id, ...systemAgentDoc.data() } as Agent
     } else {
-      var agent = { id: agentDoc.id, ...agentDoc.data() } as Agent
+      agent = { id: agentDoc.id, ...agentDoc.data() } as Agent
     }
 
     const completion = await openai.chat.completions.create({
@@ -61,10 +62,10 @@ export async function POST(
       response: completion.choices[0].message.content
     })
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in agent task API:', error)
     return NextResponse.json(
-      { error: error.message || "Something went wrong" },
+      { error: error|| "Something went wrong" },
       { status: 500 }
     )
   }

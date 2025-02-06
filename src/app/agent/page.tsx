@@ -141,6 +141,7 @@ export default function AgentPage() {
       setFormData({ name: '', description: '', model: 'gpt-4', instructions: '' })
       fetchUserAgents()
     } catch (error) {
+      console.error(error)
       toast.error('Operation failed, please try again')
     }
   }
@@ -154,6 +155,7 @@ export default function AgentPage() {
       toast.success('Deleted successfully!')
       fetchUserAgents()
     } catch (error) {
+      console.error(error)
       toast.error('Delete failed, please try again')
     }
   }
