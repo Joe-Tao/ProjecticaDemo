@@ -7,34 +7,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import Link from 'next/link'
-
-interface Agent {
-  id?: string
-  name: string
-  description: string
-  model: string
-  instructions: string
-  isSystem?: boolean
-  userId?: string
-}
-
-// Predefined Agent
-const systemAgents: Agent[] = [
-  {
-    name: "General Assistant",
-    description: "A versatile AI assistant that can answer various questions",
-    model: "gpt-4o",
-    instructions: "You are a friendly AI assistant that helps users with various questions.",
-    isSystem: true
-  },
-  {
-    name: "Code Expert",
-    description: "AI assistant focused on programming-related questions",
-    model: "gpt-4o",
-    instructions: "You are an expert that helps users with eamil generation and sending.",
-    isSystem: true
-  }
-]
+import { systemAgents, Agent } from '@/config/systemAgents'
 
 const models = [
   { value: "gpt-4", label: "GPT-4" },
