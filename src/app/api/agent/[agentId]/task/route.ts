@@ -1,5 +1,5 @@
 import OpenAI from 'openai'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { auth } from "@/auth"
 import { db } from '@/firebase'
 import { doc, getDoc } from 'firebase/firestore'
@@ -11,19 +11,22 @@ const openai = new OpenAI({
 })
 
 // 修正 API Handler
-export async function POST(req: Request, { params }: { params: { agentId: string } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { agentId: string } }
+) {
   try {
     const session = await auth()
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
     }
 
-    const { input, taskId } = await req.json()
+    const { input, taskId } = await request.json()
     if (!input || !taskId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const { agentId } = await params  // 这里改为从 params 获取
+    const { agentId } = params
 
     // 获取用户定义的 agent
     let agent: Agent
