@@ -19,7 +19,7 @@ interface Agent {
 }
 
 // Predefined Agent
-export const systemAgents: Agent[] = [
+const systemAgents: Agent[] = [
   {
     name: "General Assistant",
     description: "A versatile AI assistant that can answer various questions",
