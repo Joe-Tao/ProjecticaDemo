@@ -78,6 +78,7 @@ export default function MarketResearchPage() {
       }
     } catch (error) {
       toast.error('Failed to get analysis')
+      console.error(error)
     } finally {
       setLoading(false)
     }
