@@ -1,47 +1,13 @@
-import openai from "./chatgpt";
+import OpenAI from "openai";
 import { db } from "@/firebase";
-import { collection, getDocs, orderBy, query as firestoreQuery, limit} from "firebase/firestore";
+import {doc, setDoc, getDoc } from "firebase/firestore";
 
-// const planFormat = `
-//     The project plan MUST strictly follow this format:
-
-// Project Plan - [Project Title]
-
-// Overview
-// [Provide a brief overview of the project, its goals, and its significance]
-
-// Outline
-
-// Steps:
-//     1. [Step description]
-//         Description: [Detailed description of the step]
-//         [Description could start from who will do the work, and how to do the work]
-//         Time: [Estimated time]
-//         [Add sub-steps]
-
-//     2. [Step description]
-//         Description: [Detailed description of the step]
-//         [Description could start from who will do the work, and how to do the work]
-//         Time: [Estimated time]
-//         [Add sub-steps]
-
-//     [Add more steps as needed]
-
-// Resources
-// [List any necessary resources, tools, or references needed for this section/phase]
-
-// Participants
-// - Virtual Assistant (if needed): [Overall role in the project]
-// - Product Owner (if needed): [Overall role in the project]
-// `;
-
-
-
-
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 const query = async (prompt: string, projectId: string, model: string, userEmail: string) => {
-    const systemPrompt = `
-You are a project planning agent, tasked to talk with a client to help them create a project plan, but currently you are also professional as a digital marketer.
+  const systemPrompt = `You are a project planning agent, called Projectica, tasked to talk with a client to help them create a project plan, but currently you are also professional as a digital marketer.
 
 The project plan will then be executed by virtual assistants.
 
@@ -125,107 +91,96 @@ Expected Outcome:
 Please return plain text without Markdown formatting.
 
 Here is the first message from the user:`
+  
+  try {
+   
+    console.time("Step 1: Get/Create Assistant");
+    let assistant;
     try {
-        // 1. Fetch chat history from Firestore
-        console.time("Step 1: Fetch chat history");
-        const messagesRef = collection(db, "users", userEmail, "projects", projectId, "messages");
-        const q = firestoreQuery(messagesRef, orderBy("createdAt", "desc"), limit(5));
-        const querySnapshot = await getDocs(q);
-
-        console.timeEnd("Step 1: Fetch chat history");
-
-        // Map Firestore documents to OpenAI-compatible messages
-        console.time("Step 1.1: Map documents to messages");
-        const history = querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                role: data.user._id === "Projectica" ? "assistant" as const : "user" as const,
-                content: data.text,
-            };
-        });
-
-        console.timeEnd("Step 1.1: Map documents to messages");
-
-        // Limit the history to fit token constraints
-
-        console.time("Step 1.2: Truncate history");
-        const tokenLimit = 4000; // Approximate token limit for GPT-3.5
-        const truncatedHistory = truncateHistory(history, tokenLimit);
-
-        console.timeEnd("Step 1.2: Truncate history");
-
-
-        console.time("Step 2: Create system message");
-        // 2. Create the system message
-        const systemMessage = {
-            role: "system" as const,
-            content: systemPrompt,
-        };
-        console.timeEnd("Step 2: Create system message");
-
-
-        console.time("Step 3: OpenAI API request");
-        // 3. Create the OpenAI API request
-        const res = await openai.chat.completions.create({
-            model: model || "4o mini",
-            messages: [
-                systemMessage,
-                ...truncatedHistory,
-                {
-                    role: "user" as const,
-                    content: prompt,
-                },
-            ],
-            temperature: 0.9,
-            top_p: 1,
-        });
-
-        console.timeEnd("Step 3: OpenAI API request");
-
-
-        const assistantMessage = res.choices[0]?.message?.content;
-        if (!assistantMessage) {
-            throw new Error("No response from OpenAI");
-        }
-
-        return assistantMessage;
-    } catch (err: unknown) {
-        if (err instanceof Error) {
-            console.error("Query Error:", err);
-            throw err;
-        } else {
-            console.error("Unknown error:", err);
-            throw new Error("An unknown error occurred");
-        }
+      assistant = await openai.beta.assistants.retrieve(projectId);
+    } catch {
+      assistant = await openai.beta.assistants.create({
+        name: "Project Planning Assistant",
+        instructions: systemPrompt,
+        model: model || "gpt-4",
+      });
     }
+    console.timeEnd("Step 1: Get/Create Assistant");
+
+    
+    console.time("Step 2: Get/Create Thread");
+    let threadId;
+    const threadRef = doc(db, "users", userEmail, "projects", projectId, "threads", "current");
+    const threadDoc = await getDoc(threadRef);
+    
+    if (threadDoc.exists()) {
+      threadId = threadDoc.data().threadId;
+    } else {
+      const thread = await openai.beta.threads.create();
+      threadId = thread.id;
+      await setDoc(threadRef, { threadId });
+    }
+    console.log("Thread id is: ",threadId)
+    console.timeEnd("Step 2: Get/Create Thread");
+
+    
+    console.time("Step 3: Add Message");
+    await openai.beta.threads.messages.create(threadId, {
+      role: "user",
+      content: prompt
+    });
+    console.timeEnd("Step 3: Add Message");
+
+   
+    console.time("Step 4: Run Assistant");
+    const run = await openai.beta.threads.runs.create(threadId, {
+      assistant_id: assistant.id,
+      instructions: "Please provide a concise and actionable response based on the project context."
+    });
+
+    
+    let response;
+    let retryCount = 0;
+    const maxRetries = 10;
+    const initialDelay = 500;
+
+    while (retryCount < maxRetries) {
+      const runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+      
+      if (runStatus.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(threadId, {
+          limit: 1,
+          order: 'desc'
+        });
+        const messageContent = messages.data[0].content[0];
+        response = messageContent.type === 'text' ? messageContent.text.value : 'Non-text response received';
+        break;
+      } else if (runStatus.status === 'failed') {
+        throw new Error('Assistant run failed');
+      }
+
+      // 指数退避
+      const delay = initialDelay * Math.pow(2, retryCount);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      retryCount++;
+    }
+    console.timeEnd("Step 4: Run Assistant");
+
+    if (!response) {
+      throw new Error('Response timeout');
+    }
+
+    return response;
+
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Query Error:", err);
+      throw err;
+    } else {
+      console.error("Unknown error:", err);
+      throw new Error("An unknown error occurred");
+    }
+  }
 };
-
-/**
- * Truncate the chat history to fit within the token limit.
- * @param history The complete chat history
- * @param tokenLimit The token limit for the OpenAI model
- */
-function truncateHistory(history: { role: "user" | "assistant"; content: string }[], tokenLimit: number) {
-    let totalTokens = 0;
-    const truncatedHistory: typeof history = [];
-
-    for (let i = history.length - 1; i >= 0; i--) {
-        const messageTokens = estimateTokens(history[i].content);
-        if (totalTokens + messageTokens > tokenLimit) break;
-
-        truncatedHistory.unshift(history[i]);
-        totalTokens += messageTokens;
-    }
-
-    return truncatedHistory;
-}
-
-/**
- * Estimate the number of tokens in a message string.
- * OpenAI token calculation is approximate here.
- */
-function estimateTokens(content: string) {
-    return Math.ceil(content.split(/\s+/).length * 1.5); // Assume ~1.5 tokens per word
-}
 
 export default query;

@@ -77,12 +77,12 @@ export default function TaskList() {
       if (!userEmail) return;
       try {
         // user-defined agents
-        const userAgentsRef = collection(db, "users", userEmail, "agents");
-        const userSnapshot = await getDocs(userAgentsRef);
-        const userAgents = userSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as Agent));
+        // const userAgentsRef = collection(db, "users", userEmail, "agents");
+        // const userSnapshot = await getDocs(userAgentsRef);
+        // const userAgents = userSnapshot.docs.map(doc => ({
+        //   id: doc.id,
+        //   ...doc.data()
+        // } as Agent));
 
         // system agents
         const systemAgentsRef = collection(db, "users", userEmail, "system_agents");
@@ -92,7 +92,7 @@ export default function TaskList() {
           ...doc.data()
         } as Agent));
 
-        setAgents([...systemAgents, ...userAgents]);
+        setAgents([...systemAgents]);
       } catch (error) {
         console.error("Error fetching agents:", error);
         toast.error("Failed to load agents");
@@ -172,6 +172,66 @@ export default function TaskList() {
     }
   };
 
+  // handle single task running
+  const handleSingleTask = async (task: Task) => {
+    const agent = agents.find(a => a.name === task.assignedTo);
+    if (!agent || !agent.id || !userEmail) return;
+
+    setProcessingTasks(prev => ({ ...prev, [task.id]: true }));
+
+    try {
+      let response;
+      if (agent.name === "Market Research Expert") {
+        // 处理市场研究专家的任务
+        response = await fetch('/api/agent/market', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            functionName: 'search_market_data',
+            query: task.name,
+            dataType: 'market_size',
+            timeframe: 'current'
+          }),
+        });
+      } else {
+        // 处理其他agent的任务
+        response = await fetch(`/api/agent/${agent.id}/task`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            input: `Please help with this task: ${task.name}. Due date: ${task.dueDate}`,
+            taskId: task.id
+          }),
+        });
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        // 更新任务的响应
+        const taskRef = doc(db, 'users', userEmail, 'projects', projectId, 'tasks', task.id);
+        await updateDoc(taskRef, {
+          agentResponse: data.analysis || data.response
+        });
+        
+        // 更新响应状态
+        setAgentResponses(prev => ({
+          ...prev,
+          [task.id]: data.analysis || data.response
+        }));
+        toast.success('Task processed successfully');
+      }
+    } catch (error) {
+      console.error(`Error processing task ${task.id}:`, error);
+      toast.error(`Failed to process task: ${task.name}`);
+    } finally {
+      setProcessingTasks(prev => ({ ...prev, [task.id]: false }));
+    }
+  };
+
   // automate all tasks
   const handleAutomate = async () => {
     if (!userEmail) return;
@@ -190,29 +250,47 @@ export default function TaskList() {
         setProcessingTasks(prev => ({ ...prev, [task.id]: true }));
 
         try {
-          const response = await fetch(`/api/agent/${agent.id}/task`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              input: `Please help with this task: ${task.name}. Due date: ${task.dueDate}`,
-              taskId: task.id
-            }),
-          });
+          let response;
+          if (agent.name === "Market Research Expert") {
+            // 处理市场研究专家的任务
+            response = await fetch('/api/agent/market', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                functionName: 'search_market_data',
+                query: task.name,
+                dataType: 'market_size',
+                timeframe: 'current'
+              }),
+            });
+          } else {
+            // 处理其他agent的任务
+            response = await fetch(`/api/agent/${agent.id}/task`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                input: `Please help with this task: ${task.name}. Due date: ${task.dueDate}`,
+                taskId: task.id
+              }),
+            });
+          }
 
           if (response.ok) {
             const data = await response.json();
             // 更新任务的响应
             const taskRef = doc(db, 'users', userEmail, 'projects', projectId, 'tasks', task.id);
             await updateDoc(taskRef, {
-              agentResponse: data.response
+              agentResponse: data.analysis || data.response
             });
             
             // 更新响应状态
             setAgentResponses(prev => ({
               ...prev,
-              [task.id]: data.response
+              [task.id]: data.analysis || data.response
             }));
           }
         } catch (error) {
@@ -226,54 +304,12 @@ export default function TaskList() {
 
       // 并行处理所有任务
       await Promise.all(taskPromises);
-      toast.success('Tasks automation started');
+      toast.success('Tasks automation completed');
     } catch (error) {
       console.error('Error automating tasks:', error);
-      toast.error('Failed to start task automation');
+      toast.error('Failed to complete task automation');
     } finally {
       setAutomating(false);
-    }
-  };
-
-  // handle single task running
-  const handleSingleTask = async (task: Task) => {
-    const agent = agents.find(a => a.name === task.assignedTo);
-    if (!agent || !agent.id || !userEmail) return;
-
-    setProcessingTasks(prev => ({ ...prev, [task.id]: true }));
-
-    try {
-      const response = await fetch(`/api/agent/${agent.id}/task`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          input: `Please help with this task: ${task.name}. Due date: ${task.dueDate}`,
-          taskId: task.id
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // 更新任务的响应
-        const taskRef = doc(db, 'users', userEmail, 'projects', projectId, 'tasks', task.id);
-        await updateDoc(taskRef, {
-          agentResponse: data.response
-        });
-        
-        // 更新响应状态
-        setAgentResponses(prev => ({
-          ...prev,
-          [task.id]: data.response
-        }));
-        toast.success('Task processed successfully');
-      }
-    } catch (error) {
-      console.error(`Error processing task ${task.id}:`, error);
-      toast.error(`Failed to process task: ${task.name}`);
-    } finally {
-      setProcessingTasks(prev => ({ ...prev, [task.id]: false }));
     }
   };
 
@@ -457,9 +493,9 @@ export default function TaskList() {
                       </button>
                       <button
                         onClick={() => {
-                          if (window.confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+                         
                             deleteTask(task.id);
-                          }
+                          
                         }}
                         className="px-2 py-1 text-red-600 hover:text-red-800"
                       >
