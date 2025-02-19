@@ -34,7 +34,7 @@ export default function MarketResearchPage() {
   const handleSubmit = async () => {
     try {
       setLoading(true)
-      let payload: any = {}
+      let payload = {}
 
       switch (activeTab) {
         case 'market':
@@ -76,8 +76,8 @@ export default function MarketResearchPage() {
       } else {
         throw new Error(data.error || 'An error occurred')
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to get analysis')
+    } catch (error) {
+      toast.error('Failed to get analysis')
     } finally {
       setLoading(false)
     }

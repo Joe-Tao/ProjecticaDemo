@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore'
+
 export interface Agent {
     id?: string
     name: string
@@ -6,8 +8,8 @@ export interface Agent {
     instructions: string
     isSystem?: boolean
     userId?: string
-    createdAt?: any
-    updatedAt?: any
+    createdAt?: Timestamp
+    updatedAt?: Timestamp
     tools?: Array<{
       type: string
       function: {

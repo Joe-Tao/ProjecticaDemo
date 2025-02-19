@@ -3,19 +3,19 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { db } from '@/firebase'
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, setDoc, query, where } from 'firebase/firestore'
+import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, setDoc, query, where } from 'firebase/firestore'
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import Link from 'next/link'
 import { systemAgents, Agent } from '@/config/systemAgents'
 
 
-const models = [
-  { value: "gpt-4", label: "GPT-4" },
-  { value: "gpt-3.5-turbo", label: "GPT-3.5" },
+// const models = [
+//   { value: "gpt-4", label: "GPT-4" },
+//   { value: "gpt-3.5-turbo", label: "GPT-3.5" },
   // { value: "claude-3-opus", label: "Claude 3 Opus" },
   // { value: "claude-3-sonnet", label: "Claude 3 Sonnet" }
-]
+// ]
 
 export default function AgentPage() {
   const { data: session, status } = useSession()
