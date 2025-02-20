@@ -2,10 +2,30 @@
 
 import { useEffect } from "react";
 
+interface CozeConfig {
+  bot_id: string;
+}
+
+interface ComponentProps {
+  title: string;
+}
+
+interface AuthConfig {
+  type: "token";
+  token: string;
+  onRefreshToken: () => string;
+}
+
+interface WebChatClientConfig {
+  config: CozeConfig;
+  componentProps: ComponentProps;
+  auth: AuthConfig;
+}
+
 declare global {
   interface Window {
     CozeWebSDK: {
-      WebChatClient: new (config: {}) => void;
+      WebChatClient: new (config: WebChatClientConfig) => void;
     }
   }
 }
@@ -41,6 +61,10 @@ export default function AgentChat() {
       });
     };
     document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   return <div id="coze-chat"></div>;

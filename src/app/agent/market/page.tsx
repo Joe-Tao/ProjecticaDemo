@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
 import Link from 'next/link'
@@ -14,7 +13,6 @@ type CompetitorAspect = 'products' | 'pricing' | 'strategy' | 'strengths' | 'wea
 type TrendType = 'consumer' | 'technology' | 'regulatory' | 'economic'
 
 export default function MarketResearchPage() {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<'market' | 'competitor' | 'trends'>('market')
   const [result, setResult] = useState<string>('')
