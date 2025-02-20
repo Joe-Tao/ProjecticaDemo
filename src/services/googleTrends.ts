@@ -7,13 +7,6 @@ interface TimelineData {
   formattedValue: string;
 }
 
-interface GeoData {
-  geoCode: string;
-  geoName: string;
-  value: number;
-  formattedValue: string;
-}
-
 interface TopicData {
   topic: {
     title: string;
