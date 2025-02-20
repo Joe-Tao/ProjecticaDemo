@@ -44,6 +44,52 @@ export interface TrendsData {
   };
 }
 
+async function retryOperation<T>(
+  operation: () => Promise<T>,
+  retries = 3,
+  delay = 1000
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    if (retries > 0) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return retryOperation(operation, retries - 1, delay * 2);
+    }
+    throw error;
+  }
+}
+
+async function fetchTrendsData(params: { keyword: string; startTime?: Date; endTime: Date }) {
+  try {
+    const result = await retryOperation(() => googleTrends.interestOverTime(params));
+    return JSON.parse(result);
+  } catch (error) {
+    console.error('Error fetching interest over time:', error);
+    throw error;
+  }
+}
+
+async function fetchRelatedTopics(params: { keyword: string; startTime?: Date; endTime: Date }) {
+  try {
+    const result = await retryOperation(() => googleTrends.relatedTopics(params));
+    return JSON.parse(result);
+  } catch (error) {
+    console.error('Error fetching related topics:', error);
+    throw error;
+  }
+}
+
+async function fetchRelatedQueries(params: { keyword: string; startTime?: Date; endTime: Date }) {
+  try {
+    const result = await retryOperation(() => googleTrends.relatedQueries(params));
+    return JSON.parse(result);
+  } catch (error) {
+    console.error('Error fetching related queries:', error);
+    throw error;
+  }
+}
+
 export async function getTrendsData(query: string, timeframe: string): Promise<TrendsData | null> {
   try {
     let startTime: Date | undefined;
@@ -62,32 +108,45 @@ export async function getTrendsData(query: string, timeframe: string): Promise<T
         break;
     }
 
-    // Get all data in parallel
+    const params = {
+      keyword: query,
+      startTime,
+      endTime,
+    };
+
+    // Get all data with individual error handling
     const [interestOverTime, relatedTopics, relatedQueries] = await Promise.all([
-      googleTrends.interestOverTime({
-        keyword: query,
-        startTime,
-        endTime,
+      fetchTrendsData(params).catch(error => {
+        console.error('Interest over time fetch failed:', error);
+        return null;
       }),
-      googleTrends.relatedTopics({
-        keyword: query,
-        startTime,
-        endTime,
+      fetchRelatedTopics(params).catch(error => {
+        console.error('Related topics fetch failed:', error);
+        return null;
       }),
-      googleTrends.relatedQueries({
-        keyword: query,
-        startTime,
-        endTime,
+      fetchRelatedQueries(params).catch(error => {
+        console.error('Related queries fetch failed:', error);
+        return null;
       })
     ]);
 
+    // If all requests failed, return null
+    if (!interestOverTime && !relatedTopics && !relatedQueries) {
+      throw new Error('All Google Trends API requests failed');
+    }
+
+    // Return partial data if some requests succeeded
     return {
-      interestOverTime: JSON.parse(interestOverTime),
-      relatedTopics: JSON.parse(relatedTopics),
-      relatedQueries: JSON.parse(relatedQueries)
+      interestOverTime: interestOverTime || { default: { timelineData: [] } },
+      relatedTopics: relatedTopics || { default: { rankedList: [{ rankedKeyword: [] }] } },
+      relatedQueries: relatedQueries || { default: { rankedList: [{ rankedKeyword: [] }] } }
     };
   } catch (error) {
     console.error('Google Trends API Error:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     return null;
   }
 } 
