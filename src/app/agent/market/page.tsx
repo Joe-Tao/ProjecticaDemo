@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
+import Link from 'next/link'
+import AgentChat from './agentChat'
+
 
 type MarketDataType = 'market_size' | 'competitors' | 'trends' | 'consumers'
 type TimeframeType = 'current' | 'historical' | 'forecast'
@@ -12,7 +14,6 @@ type CompetitorAspect = 'products' | 'pricing' | 'strategy' | 'strengths' | 'wea
 type TrendType = 'consumer' | 'technology' | 'regulatory' | 'economic'
 
 export default function MarketResearchPage() {
-  const { data: session, status } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<'market' | 'competitor' | 'trends'>('market')
@@ -34,75 +35,78 @@ export default function MarketResearchPage() {
   const handleSubmit = async () => {
     try {
       setLoading(true)
-      let payload = {}
+      let response;
 
       switch (activeTab) {
         case 'market':
-          payload = {
-            functionName: 'search_market_data',
-            query: marketQuery,
-            dataType,
-            timeframe
-          }
-          break
+          response = await fetch('/api/agent/market/search', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              query: marketQuery,
+              dataType,
+              timeframe
+            })
+          });
+          break;
+
         case 'competitor':
-          payload = {
-            functionName: 'analyze_competitors',
-            companyName,
-            aspects: aspects.length > 0 ? aspects : undefined
-          }
-          break
+          response = await fetch('/api/agent/market/competitor', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              companyName,
+              aspects: aspects.length > 0 ? aspects : undefined
+            })
+          });
+          break;
+
         case 'trends':
-          payload = {
-            functionName: 'get_market_trends',
-            industry,
-            trendType
-          }
-          break
+          response = await fetch('/api/agent/market/trends', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              industry,
+              trendType,
+              timeframe
+            })
+          });
+          break;
       }
 
-      const response = await fetch('/api/agent/market', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      })
-
-      const data = await response.json()
+      const data = await response.json();
       
       if (response.ok) {
-        setResult(data.analysis)
+        setResult(data.analysis);
       } else {
-        throw new Error(data.error || 'An error occurred')
+        throw new Error(data.error || 'An error occurred');
       }
     } catch (error) {
-      toast.error('Failed to get analysis')
-      console.error(error)
+      toast.error('Failed to get analysis');
+      console.error(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-gray-100 pt-16 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
-    )
-  }
-
-  if (!session) {
-    router.push('/signin')
-    return null
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 pt-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-2xl font-bold mb-6 text-black">Market Research Expert</h1>
-          
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-black">Market Research Expert</h1>
+            <Link href="/agent">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                Back to Agents
+              </button>
+            </Link>
+          </div>
           {/* Tab Navigation */}
           <div className="flex space-x-4 mb-6">
             <button
@@ -201,30 +205,6 @@ export default function MarketResearchPage() {
                     placeholder="e.g., Tesla, Inc."
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Analysis Aspects
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {(['products', 'pricing', 'strategy', 'strengths', 'weaknesses'] as CompetitorAspect[]).map((aspect) => (
-                      <label key={aspect} className="flex items-center space-x-2 text-gray-900">
-                        <input
-                          type="checkbox"
-                          checked={aspects.includes(aspect)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setAspects([...aspects, aspect])
-                            } else {
-                              setAspects(aspects.filter(a => a !== aspect))
-                            }
-                          }}
-                          className="rounded text-blue-500 focus:ring-blue-500"
-                        />
-                        <span className="text-sm capitalize">{aspect}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
               </div>
             )}
 
@@ -260,7 +240,7 @@ export default function MarketResearchPage() {
               </div>
             )}
           </div>
-
+        
           {/* Submit Button */}
           <button
             onClick={handleSubmit}
@@ -283,6 +263,7 @@ export default function MarketResearchPage() {
               </div>
             </div>
           )}
+          <AgentChat />
         </div>
       </div>
     </div>

@@ -212,7 +212,7 @@ export default function Profile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {projects.map((project) => (
                     <Link
-                      href={`/project/${project.id}`}
+                      href={`/projects/${project.id}`}
                       key={project.id}
                       className="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition-colors"
                     >

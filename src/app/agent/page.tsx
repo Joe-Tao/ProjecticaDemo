@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { db } from '@/firebase'
-import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, setDoc, query, where } from 'firebase/firestore'
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import Link from 'next/link'
@@ -22,85 +20,14 @@ export default function AgentPage() {
   const [agents, setAgents] = useState<Agent[]>([])
   const router = useRouter()
 
-  const initializeSystemAgents = async () => {
-    if (!session?.user?.email) return;
-    
-    try {
-      const systemAgentsRef = collection(db, "users", session.user.email, "system_agents");
-      const snapshot = await getDocs(systemAgentsRef);
-      const existingAgents = new Map(
-        snapshot.docs.map(doc => [
-          doc.data().name, 
-          { id: doc.id, ...doc.data() } as Agent
-        ])
-      );
-
-      for (const agent of systemAgents) {
-        const existingAgent = existingAgents.get(agent.name);
-        
-        if (!existingAgent) {
-          const querySnapshot = await getDocs(
-            query(systemAgentsRef, where("name", "==", agent.name))
-          );
-          if (querySnapshot.empty) {
-            await addDoc(systemAgentsRef, {
-              ...agent,
-              userId: session.user.email,
-              createdAt: serverTimestamp(),
-              updatedAt: serverTimestamp()
-            });
-          }
-        } else if (
-          existingAgent.description !== agent.description ||
-          existingAgent.model !== agent.model ||
-          existingAgent.instructions !== agent.instructions ||
-          JSON.stringify(existingAgent.tools) !== JSON.stringify(agent.tools)
-        ) {
-          await setDoc(doc(systemAgentsRef, existingAgent.id), {
-            ...agent,
-            userId: session.user.email,
-            createdAt: existingAgent.createdAt, 
-            updatedAt: serverTimestamp()
-          });
-        }
-      }
-
-      const configAgentNames = new Set(systemAgents.map(a => a.name));
-      for (const [name, agent] of existingAgents) {
-        if (!configAgentNames.has(name)) {
-          await deleteDoc(doc(systemAgentsRef, agent.id));
-        }
-      }
-
-    } catch (error) {
-      console.error("Error initializing system agents:", error);
-    }
-  };
-
-  const fetchUserAgents = async () => {
-    if (!session?.user?.email) return;
-    
-    try {
-      const systemAgentsRef = collection(db, "users", session.user.email, "system_agents");
-      const systemSnapshot = await getDocs(systemAgentsRef);
-      const dbsystemAgents = systemSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Agent));
-
-      setAgents([...dbsystemAgents])
-    } catch (error) {
-      console.error("Error fetching agents:", error);
-      toast.error("Failed to load agents");
-    }
-  };
+ 
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       toast.error("Please sign in to access");
       router.push('/signin');
     } else if (status === 'authenticated') {
-      initializeSystemAgents().then(() => fetchUserAgents());
+      setAgents(systemAgents)
     }
   }, [status, router, session]);
 
