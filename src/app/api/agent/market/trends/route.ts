@@ -27,14 +27,27 @@ export async function POST(request: Request) {
     // Get Google Trends data
     const trendsData = await getTrendsData(industry, timeframe)
     if (!trendsData) {
-      throw new Error('Failed to fetch trends data')
+      console.error('Failed to fetch trends data for industry:', industry);
+      return NextResponse.json({ error: "Failed to fetch Google Trends data" }, { status: 500 })
     }
 
     // Get or create the assistant
-    const assistant = await getOrCreateAssistant()
+    let assistant;
+    try {
+      assistant = await getOrCreateAssistant()
+    } catch (error) {
+      console.error('Error creating/getting assistant:', error);
+      return NextResponse.json({ error: "Failed to initialize OpenAI assistant" }, { status: 500 })
+    }
 
     // Create a thread
-    const thread = await openai.beta.threads.create()
+    let thread;
+    try {
+      thread = await openai.beta.threads.create()
+    } catch (error) {
+      console.error('Error creating thread:', error);
+      return NextResponse.json({ error: "Failed to create analysis thread" }, { status: 500 })
+    }
 
     // Construct the message for trend analysis
     const userMessage = `
@@ -74,52 +87,66 @@ Please provide a comprehensive analysis including:
    - Impact assessment
 `
 
-    // Add the message to the thread
-    await openai.beta.threads.messages.create(thread.id, {
-      role: "user",
-      content: userMessage
-    })
+    try {
+      // Add the message to the thread
+      await openai.beta.threads.messages.create(thread.id, {
+        role: "user",
+        content: userMessage
+      })
 
-    // Run the assistant
-    const run = await openai.beta.threads.runs.create(thread.id, {
-      assistant_id: assistant.id,
-    })
+      // Run the assistant
+      const run = await openai.beta.threads.runs.create(thread.id, {
+        assistant_id: assistant.id,
+      })
 
-    // Wait for the completion
-    let response
-    while (true) {
-      const runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id)
+      // Wait for the completion
+      let response
+      let attempts = 0
+      const maxAttempts = 30 // 30秒超时
       
-      if (runStatus.status === 'completed') {
-        const messages = await openai.beta.threads.messages.list(thread.id)
-        const lastMessage = messages.data[0]
-        response = lastMessage.content[0].type === 'text' 
-          ? lastMessage.content[0].text.value 
-          : 'Non-text response received'
-        break
-      } else if (runStatus.status === 'failed') {
-        throw new Error('Assistant run failed')
+      while (attempts < maxAttempts) {
+        const runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id)
+        
+        if (runStatus.status === 'completed') {
+          const messages = await openai.beta.threads.messages.list(thread.id)
+          const lastMessage = messages.data[0]
+          response = lastMessage.content[0].type === 'text' 
+            ? lastMessage.content[0].text.value 
+            : 'Non-text response received'
+          break
+        } else if (runStatus.status === 'failed') {
+          throw new Error('Assistant run failed: ' + runStatus.last_error?.message)
+        }
+        
+        attempts++
+        await new Promise(resolve => setTimeout(resolve, 1000))
       }
-      
-      // Wait before checking again
-      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      if (!response) {
+        throw new Error('Analysis timed out')
+      }
+
+      return NextResponse.json({
+        analysis: response,
+        trendsData,
+        metadata: {
+          industry,
+          timeframe,
+          trendType,
+          threadId: thread.id
+        }
+      })
+    } catch (error) {
+      console.error('Error in analysis process:', error);
+      return NextResponse.json(
+        { error: `Analysis process failed: ${error instanceof Error ? error.message : 'Unknown error'}` },
+        { status: 500 }
+      )
     }
-
-    return NextResponse.json({
-      analysis: response,
-      trendsData,
-      metadata: {
-        industry,
-        timeframe,
-        trendType,
-        threadId: thread.id
-      }
-    })
-
   } catch (error) {
     console.error('Trends Analysis API Error:', error)
     return NextResponse.json(
-      { error: "An error occurred while processing your request" },
+      { error: `An error occurred while processing your request: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     )
   }
@@ -137,11 +164,15 @@ async function getOrCreateAssistant() {
       return existingAssistant
     }
 
+    if (!MARKET_EXPERT) {
+      throw new Error('Market Expert configuration not found')
+    }
+
     return await openai.beta.assistants.create({
-      name: MARKET_EXPERT?.name,
-      description: MARKET_EXPERT?.description,
-      instructions: MARKET_EXPERT?.instructions,
-      model: MARKET_EXPERT?.model || "gpt-4",
+      name: MARKET_EXPERT.name,
+      description: MARKET_EXPERT.description,
+      instructions: MARKET_EXPERT.instructions,
+      model: MARKET_EXPERT.model || "gpt-4",
       tools: []
     })
   } catch (error) {
