@@ -1,9 +1,54 @@
 import googleTrends from 'google-trends-api';
 
+interface TimelineData {
+  time: string;
+  value: number;
+  formattedTime: string;
+  formattedValue: string;
+}
+
+interface GeoData {
+  geoCode: string;
+  geoName: string;
+  value: number;
+  formattedValue: string;
+}
+
+interface TopicData {
+  topic: {
+    title: string;
+    type: string;
+  };
+  value: number;
+  formattedValue: string;
+}
+
+interface QueryData {
+  query: string;
+  value: number;
+  formattedValue: string;
+}
+
 export interface TrendsData {
-  interestOverTime: any;
-  relatedTopics: any;
-  relatedQueries: any;
+  interestOverTime: {
+    default: {
+      timelineData: TimelineData[];
+    };
+  };
+  relatedTopics: {
+    default: {
+      rankedList: Array<{
+        rankedKeyword: TopicData[];
+      }>;
+    };
+  };
+  relatedQueries: {
+    default: {
+      rankedList: Array<{
+        rankedKeyword: QueryData[];
+      }>;
+    };
+  };
 }
 
 export async function getTrendsData(query: string, timeframe: string): Promise<TrendsData | null> {

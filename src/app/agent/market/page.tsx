@@ -9,7 +9,6 @@ import AgentChat from './agentChat'
 
 type MarketDataType = 'market_size' | 'competitors' | 'trends' | 'consumers'
 type TimeframeType = 'current' | 'historical' | 'forecast'
-type CompetitorAspect = 'products' | 'pricing' | 'strategy' | 'strengths' | 'weaknesses'
 type TrendType = 'consumer' | 'technology' | 'regulatory' | 'economic'
 
 export default function MarketResearchPage() {
@@ -24,7 +23,6 @@ export default function MarketResearchPage() {
 
   // Competitor Analysis States
   const [companyName, setCompanyName] = useState('')
-  const [aspects, setAspects] = useState<CompetitorAspect[]>([])
 
   // Market Trends States
   const [industry, setIndustry] = useState('')
@@ -58,7 +56,6 @@ export default function MarketResearchPage() {
             },
             body: JSON.stringify({
               companyName,
-              aspects: aspects.length > 0 ? aspects : undefined
             })
           });
           break;
