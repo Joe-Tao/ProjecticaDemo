@@ -182,21 +182,28 @@ export default function TaskList() {
     try {
       let response;
       if (agent.name === "Market Research Expert") {
-        // 处理市场研究专家的任务
-        response = await fetch('/api/agent/market', {
+        const taskLower = task.name.toLowerCase();
+        let endpoint = 'search'; // default endpoint
+        
+        if (taskLower.includes('competitor') || taskLower.includes('competitor')) {
+          endpoint = 'competitor';
+        } else if (taskLower.includes('trend') || taskLower.includes('trend')) {
+          endpoint = 'trends';
+        }
+        
+        response = await fetch(`/api/agent/market/${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            functionName: 'search_market_data',
             query: task.name,
-            dataType: 'market_size',
-            timeframe: 'current'
+            taskId: task.id,
+            projectId: projectId
           }),
         });
       } else {
-        // 处理其他agent的任务
+        // other agents
         response = await fetch(`/api/agent/${agent.id}/task`, {
           method: 'POST',
           headers: {
@@ -211,13 +218,11 @@ export default function TaskList() {
 
       if (response.ok) {
         const data = await response.json();
-        // 更新任务的响应
         const taskRef = doc(db, 'users', userEmail, 'projects', projectId, 'tasks', task.id);
         await updateDoc(taskRef, {
           agentResponse: data.analysis || data.response
         });
         
-        // 更新响应状态
         setAgentResponses(prev => ({
           ...prev,
           [task.id]: data.analysis || data.response
@@ -238,31 +243,39 @@ export default function TaskList() {
     setAutomating(true);
 
     try {
-      // 获取分配给 agent 的任务
+      // get tasks assigned to agents
       const agentTasks = tasks.filter(task => agents.some(agent => agent.name === task.assignedTo));
       
-      // 为每个任务创建独立的处理 Promise
+      // create separate processing promises for each task
       const taskPromises = agentTasks.map(async (task) => {
         const agent = agents.find(a => a.name === task.assignedTo);
         if (!agent || !agent.id) return;
 
-        // 设置该任务为处理中状态
+        // set task to processing state
         setProcessingTasks(prev => ({ ...prev, [task.id]: true }));
 
         try {
           let response;
           if (agent.name === "Market Research Expert") {
-            // 处理市场研究专家的任务
-            response = await fetch('/api/agent/market', {
+            // determine which market research endpoint to use based on task name
+            const taskLower = task.name.toLowerCase();
+            let endpoint = 'search'; // default endpoint
+            
+            if (taskLower.includes('competitor') || taskLower.includes('competitor')) {
+              endpoint = 'competitor';
+            } else if (taskLower.includes('trend') || taskLower.includes('trend')) {
+              endpoint = 'trends';
+            }
+            
+            response = await fetch(`/api/agent/market/${endpoint}`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                functionName: 'search_market_data',
                 query: task.name,
-                dataType: 'market_size',
-                timeframe: 'current'
+                taskId: task.id,
+                projectId: projectId
               }),
             });
           } else {
@@ -281,13 +294,13 @@ export default function TaskList() {
 
           if (response.ok) {
             const data = await response.json();
-            // 更新任务的响应
+            // update task response
             const taskRef = doc(db, 'users', userEmail, 'projects', projectId, 'tasks', task.id);
             await updateDoc(taskRef, {
               agentResponse: data.analysis || data.response
             });
             
-            // 更新响应状态
+            // update response state
             setAgentResponses(prev => ({
               ...prev,
               [task.id]: data.analysis || data.response
@@ -297,12 +310,12 @@ export default function TaskList() {
           console.error(`Error processing task ${task.id}:`, error);
           toast.error(`Failed to process task: ${task.name}`);
         } finally {
-          // 清除该任务的处理中状态
+          // clear processing state
           setProcessingTasks(prev => ({ ...prev, [task.id]: false }));
         }
       });
 
-      // 并行处理所有任务
+      // process all tasks in parallel
       await Promise.all(taskPromises);
       toast.success('Tasks automation completed');
     } catch (error) {
@@ -313,7 +326,7 @@ export default function TaskList() {
     }
   };
 
-  // 修改任务响应的处理函数
+  // handle task response change
   const handleResponseChange = async (taskId: string, newResponse: string) => {
     if (!userEmail) return;
     
@@ -333,7 +346,7 @@ export default function TaskList() {
     }
   };
 
-  // 生成 Telegram 链接
+  // generate Telegram link
   const getTelegramLink = (username: string) => {
     return `https://t.me/${username}`;
   };
