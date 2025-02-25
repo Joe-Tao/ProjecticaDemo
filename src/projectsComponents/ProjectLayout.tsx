@@ -7,12 +7,13 @@ import TaskList from './projectTask';
 
 
 import ProjectChat from './projectChat';
-import ProjectDisplay from './projectDisplay';
+import ProjectPlanning from './ProjectPlanning';
 interface ProjectLayoutProps {
   projectId: string;
+  userId: string;
 }
 
-export default function ProjectLayout({ projectId}: ProjectLayoutProps) {
+export default function ProjectLayout({ projectId, userId}: ProjectLayoutProps) {
   const [activeSection, setActiveSection] = useState<'none' | 'chat' | 'tasks'>('chat');
 
   const slideVariants = {
@@ -123,7 +124,7 @@ export default function ProjectLayout({ projectId}: ProjectLayoutProps) {
               activeSection === 'none' ? 'w-full' : 'w-1/2'
             } bg-white dark:bg-gray-900 rounded-xl shadow-lg transition-all duration-300`}
           >
-            <ProjectDisplay projectId={projectId} readOnly={false} />
+            <ProjectPlanning projectId={projectId} userId={userId} />
           </div>
 
           {/* Tasks Section */}
