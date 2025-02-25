@@ -9,10 +9,14 @@ export const metadata: Metadata = {
     description: "Sign in to your account to access your workspace",
 }
 
+interface SearchParams {
+    callbackUrl?: string;
+}
+
 export default async function SignInPage({
     searchParams,
 }: {
-    searchParams: { callbackUrl?: string }
+    searchParams: SearchParams;
 }) {
     const session = await auth()
     if (session?.user) {
