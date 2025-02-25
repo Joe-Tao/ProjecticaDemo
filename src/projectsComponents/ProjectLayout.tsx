@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMessageSquare, FiList, FiFileText } from 'react-icons/fi';
-import ProjectChat from './projectChat';
 import TaskList from './projectTask';
-import ProjectPlanning from './ProjectPlanning';
+
+
+import ProjectChat from './projectChat';
+import ProjectDisplay from './projectDisplay';
 interface ProjectLayoutProps {
   projectId: string;
   userId: string;
@@ -122,8 +124,7 @@ export default function ProjectLayout({ projectId, userId }: ProjectLayoutProps)
               activeSection === 'none' ? 'w-full' : 'w-1/2'
             } bg-white dark:bg-gray-900 rounded-xl shadow-lg transition-all duration-300`}
           >
-            {/* <ProjectDisplay projectId={projectId} readOnly={false} /> */}
-            <ProjectPlanning projectId={projectId} userId={userId} />
+            <ProjectDisplay projectId={projectId} readOnly={false} />
           </div>
 
           {/* Tasks Section */}
