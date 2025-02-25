@@ -10,10 +10,9 @@ import ProjectChat from './projectChat';
 import ProjectDisplay from './projectDisplay';
 interface ProjectLayoutProps {
   projectId: string;
-  userId: string;
 }
 
-export default function ProjectLayout({ projectId, userId }: ProjectLayoutProps) {
+export default function ProjectLayout({ projectId}: ProjectLayoutProps) {
   const [activeSection, setActiveSection] = useState<'none' | 'chat' | 'tasks'>('chat');
 
   const slideVariants = {

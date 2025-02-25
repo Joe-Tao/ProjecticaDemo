@@ -15,7 +15,7 @@ interface ProjectPlanningProps {
   userId: string;
 }
 
-// 创建初始内容
+// create initial content
 const initialBlocks: PartialBlock[] = [{
   type: "paragraph",
   content: "Start writing your project plan..."

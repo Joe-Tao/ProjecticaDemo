@@ -216,7 +216,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                     )}
                 </div>
 
-                <ProjectLayout projectId={project.id} userId={session?.user?.email || ''} />
+                <ProjectLayout projectId={project.id} />
             </div>
         </div>
     );
