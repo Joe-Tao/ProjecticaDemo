@@ -6,7 +6,13 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const query = async (prompt: string, projectId: string, model: string, userEmail: string) => {
+const query = async (
+  prompt: string, 
+  projectId: string, 
+  model: string, 
+  userEmail: string,
+  onProgress?: (content: string) => void
+) => {
   const systemPrompt = `You are a project planning agent, called Projectica, tasked to talk with a client to help them create a project plan, but currently you are also professional as a digital marketer.
 
 The project plan will then be executed by virtual assistants.
@@ -93,7 +99,6 @@ Please return plain text without Markdown formatting.
 Here is the first message from the user:`
   
   try {
-   
     console.time("Step 1: Get/Create Assistant");
     let assistant;
     try {
@@ -107,7 +112,6 @@ Here is the first message from the user:`
     }
     console.timeEnd("Step 1: Get/Create Assistant");
 
-    
     console.time("Step 2: Get/Create Thread");
     let threadId;
     const threadRef = doc(db, "users", userEmail, "projects", projectId, "threads", "current");
@@ -123,7 +127,6 @@ Here is the first message from the user:`
     console.log("Thread id is: ",threadId)
     console.timeEnd("Step 2: Get/Create Thread");
 
-    
     console.time("Step 3: Add Message");
     await openai.beta.threads.messages.create(threadId, {
       role: "user",
@@ -131,15 +134,13 @@ Here is the first message from the user:`
     });
     console.timeEnd("Step 3: Add Message");
 
-   
     console.time("Step 4: Run Assistant");
     const run = await openai.beta.threads.runs.create(threadId, {
       assistant_id: assistant.id,
       instructions: "Please provide a concise and actionable response based on the project context."
     });
 
-    
-    let response;
+    let fullResponse = '';
     let retryCount = 0;
     const maxRetries = 10;
     const initialDelay = 500;
@@ -152,25 +153,49 @@ Here is the first message from the user:`
           limit: 1,
           order: 'desc'
         });
+
         const messageContent = messages.data[0].content[0];
-        response = messageContent.type === 'text' ? messageContent.text.value : 'Non-text response received';
+        if (messageContent.type === 'text') {
+          const newContent = messageContent.text.value;
+          
+          if (newContent !== fullResponse) {
+            fullResponse = newContent;
+            if (onProgress) {
+              onProgress(fullResponse);
+            }
+          }
+        }
         break;
+      } else if (runStatus.status === 'in_progress') {
+        const pendingMessages = await openai.beta.threads.messages.list(threadId, {
+          limit: 1,
+          order: 'desc'
+        });
+
+        if (pendingMessages.data[0]?.content[0]?.type === 'text') {
+          const partialContent = pendingMessages.data[0].content[0].text.value;
+          if (partialContent !== fullResponse) {
+            fullResponse = partialContent;
+            if (onProgress) {
+              onProgress(fullResponse);
+            }
+          }
+        }
       } else if (runStatus.status === 'failed') {
         throw new Error('Assistant run failed');
       }
 
-      // 指数退避
       const delay = initialDelay * Math.pow(2, retryCount);
       await new Promise(resolve => setTimeout(resolve, delay));
       retryCount++;
     }
     console.timeEnd("Step 4: Run Assistant");
 
-    if (!response) {
+    if (!fullResponse) {
       throw new Error('Response timeout');
     }
 
-    return response;
+    return fullResponse;
 
   } catch (err: unknown) {
     if (err instanceof Error) {

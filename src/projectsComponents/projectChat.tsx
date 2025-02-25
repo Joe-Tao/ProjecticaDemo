@@ -19,9 +19,6 @@ export default function ProjectChat(){
                 <div className="max-w-7xl mx-auto px-4">
                 <ChatInput id={projectId} />
                 </div>
-                {/* <div className="flex justify-center pt-2">
-                <ChatHelp />
-                </div> */}
             </div>
         </div>
     )

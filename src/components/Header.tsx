@@ -1,9 +1,9 @@
-
 import React from "react";
 import Link from "next/link";
 import { auth } from "@/auth";
 import Image from "next/image";
 import SignOut from "./SignOut";
+
 const Header = async () => {
   const session = await auth()
   return (

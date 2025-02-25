@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { useParams } from 'next/navigation';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-// import { systemAgents } from '@/app/agent/page';
+import { systemAgents } from '@/config/systemAgents';
 
 interface Agent {
   id?: string;
@@ -76,22 +76,6 @@ export default function TaskList() {
     const fetchAgents = async () => {
       if (!userEmail) return;
       try {
-        // user-defined agents
-        // const userAgentsRef = collection(db, "users", userEmail, "agents");
-        // const userSnapshot = await getDocs(userAgentsRef);
-        // const userAgents = userSnapshot.docs.map(doc => ({
-        //   id: doc.id,
-        //   ...doc.data()
-        // } as Agent));
-
-        // system agents
-        const systemAgentsRef = collection(db, "users", userEmail, "system_agents");
-        const systemSnapshot = await getDocs(systemAgentsRef);
-        const systemAgents = systemSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as Agent));
-
         setAgents([...systemAgents]);
       } catch (error) {
         console.error("Error fetching agents:", error);
