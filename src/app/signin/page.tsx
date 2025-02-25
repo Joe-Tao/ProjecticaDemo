@@ -9,21 +9,13 @@ export const metadata: Metadata = {
     description: "Sign in to your account to access your workspace",
 }
 
-interface SearchParams {
-    callbackUrl?: string;
-}
-
-export default async function SignInPage({
-    searchParams,
-}: {
-    searchParams: SearchParams;
-}) {
+export default async function SignInPage() {
     const session = await auth()
+    
+    // if user is already logged in, redirect to workspace
     if (session?.user) {
         redirect("/workspace")
     }
-
-    const callbackUrl = searchParams.callbackUrl || "/workspace"
 
     return (
         <div className="min-h-screen bg-white flex flex-col justify-center items-center px-4">
@@ -41,7 +33,7 @@ export default async function SignInPage({
                         <form
                             action={async () => {
                                 "use server"
-                                await signIn("google", { callbackUrl })
+                                await signIn("google", { callbackUrl: "/workspace" })
                             }}
                             className="w-full"
                         >
