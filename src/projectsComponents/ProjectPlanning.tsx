@@ -15,12 +15,6 @@ interface ProjectPlanningProps {
   userId: string;
 }
 
-// create initial content
-const initialBlocks: PartialBlock[] = [{
-  type: "paragraph",
-  content: "Start writing your project plan..."
-}];
-
 // save to firebase
 async function saveToFirebase(blocks: Block[], userId: string, projectId: string) {
   const docRef = doc(db, 'users', userId, 'projects', projectId, 'projectPlan', 'plan');
@@ -34,14 +28,11 @@ async function loadFromFirebase(userId: string, projectId: string): Promise<Part
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       return docSnap.data().content as PartialBlock[];
-    } else {
-      // if the document does not exist, create a new document
-      await setDoc(docRef, { content: initialBlocks });
-      return initialBlocks;
     }
+    return undefined;
   } catch (error) {
     console.error('Error loading project plan:', error);
-    return initialBlocks;
+    return undefined;
   }
 }
 
@@ -53,12 +44,12 @@ const ProjectPlanning = ({ projectId, userId }: ProjectPlanningProps) => {
   useEffect(() => {
     loadFromFirebase(userId, projectId)
       .then(content => {
-        setInitialContent(content || initialBlocks);
+        setInitialContent(content);
       })
       .catch(err => {
         console.error('Error loading content:', err);
         setError('Failed to load project plan');
-        setInitialContent(initialBlocks);
+        setInitialContent(undefined);
       });
   }, [userId, projectId]);
 
@@ -67,7 +58,7 @@ const ProjectPlanning = ({ projectId, userId }: ProjectPlanningProps) => {
     if (initialContent === "loading") {
       return undefined;
     }
-    return BlockNoteEditor.create({ initialContent: initialContent || initialBlocks });
+    return BlockNoteEditor.create({ initialContent });
   }, [initialContent]);
 
   // debounce save function
