@@ -166,16 +166,8 @@ export default function TaskList() {
     try {
       let response;
       if (agent.name === "Market Research Expert") {
-        const taskLower = task.name.toLowerCase();
-        let endpoint = 'search'; // default endpoint
         
-        if (taskLower.includes('competitor') || taskLower.includes('competitor')) {
-          endpoint = 'competitor';
-        } else if (taskLower.includes('trend') || taskLower.includes('trend')) {
-          endpoint = 'trends';
-        }
-        
-        response = await fetch(`/api/agent/market/${endpoint}`, {
+        response = await fetch(`/api/agent/market/search`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

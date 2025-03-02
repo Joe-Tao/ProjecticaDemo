@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMessageSquare, FiList, FiFileText } from 'react-icons/fi';
 import TaskList from './projectTask';
+import ChatSupport from '@/components/ui/chat-support';
 
-
-import ProjectChat from './projectChat';
 import ProjectPlanning from './ProjectPlanning';
+
 interface ProjectLayoutProps {
   projectId: string;
   userId: string;
@@ -112,7 +112,8 @@ export default function ProjectLayout({ projectId, userId}: ProjectLayoutProps) 
                   Chat with AI
                 </h2>
                 <div className="text-gray-600 dark:text-gray-300">
-                  <ProjectChat />
+                  {/* <ProjectChat /> */}
+                  <ChatSupport projectId={projectId} userId={userId}/>
                 </div>
               </motion.div>
             )}

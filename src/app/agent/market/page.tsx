@@ -6,79 +6,35 @@ import ReactMarkdown from 'react-markdown'
 import Link from 'next/link'
 import AgentChat from './agentChat'
 
-
-type MarketDataType = 'market_size' | 'competitors' | 'trends' | 'consumers'
-type TimeframeType = 'current' | 'historical' | 'forecast'
-type TrendType = 'consumer' | 'technology' | 'regulatory' | 'economic'
+interface Reference {
+  title: string;
+  url: string;
+  snippet?: string;
+  date?: string;
+}
 
 export default function MarketResearchPage() {
   const [loading, setLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<'market' | 'competitor' | 'trends'>('market')
   const [result, setResult] = useState<string>('')
-
-  // Market Data Search States
-  const [marketQuery, setMarketQuery] = useState('')
-  const [dataType, setDataType] = useState<MarketDataType>('market_size')
-  const [timeframe, setTimeframe] = useState<TimeframeType>('current')
-
-  // Competitor Analysis States
-  const [companyName, setCompanyName] = useState('')
-
-  // Market Trends States
-  const [industry, setIndustry] = useState('')
-  const [trendType, setTrendType] = useState<TrendType>('technology')
+  const [references, setReferences] = useState<Reference[]>([])
+  const [query, setQuery] = useState('')
 
   const handleSubmit = async () => {
     try {
       setLoading(true)
-      let response;
-
-      switch (activeTab) {
-        case 'market':
-          response = await fetch('/api/agent/market/search', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              query: marketQuery,
-              dataType,
-              timeframe
-            })
-          });
-          break;
-
-        case 'competitor':
-          response = await fetch('/api/agent/market/competitor', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              companyName,
-            })
-          });
-          break;
-
-        case 'trends':
-          response = await fetch('/api/agent/market/trends', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              industry,
-              trendType,
-              timeframe
-            })
-          });
-          break;
-      }
+      const response = await fetch('/api/agent/market/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query })
+      });
 
       const data = await response.json();
       
       if (response.ok) {
         setResult(data.analysis);
+        setReferences(data.references || []);
       } else {
         throw new Error(data.error || 'An error occurred');
       }
@@ -102,140 +58,25 @@ export default function MarketResearchPage() {
               </button>
             </Link>
           </div>
-          {/* Tab Navigation */}
-          <div className="flex space-x-4 mb-6">
-            <button
-              onClick={() => setActiveTab('market')}
-              className={`px-4 py-2 rounded-lg ${
-                activeTab === 'market'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Market Data
-            </button>
-            <button
-              onClick={() => setActiveTab('competitor')}
-              className={`px-4 py-2 rounded-lg ${
-                activeTab === 'competitor'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Competitor Analysis
-            </button>
-            <button
-              onClick={() => setActiveTab('trends')}
-              className={`px-4 py-2 rounded-lg ${
-                activeTab === 'trends'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Market Trends
-            </button>
-          </div>
 
-          {/* Input Forms */}
+          {/* Input Form */}
           <div className="mb-6">
-            {activeTab === 'market' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Market Query
-                  </label>
-                  <input
-                    type="text"
-                    value={marketQuery}
-                    onChange={(e) => setMarketQuery(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    placeholder="e.g., Electric Vehicle Market in Asia"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Data Type
-                    </label>
-                    <select
-                      value={dataType}
-                      onChange={(e) => setDataType(e.target.value as MarketDataType)}
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    >
-                      <option value="market_size">Market Size</option>
-                      <option value="competitors">Competitors</option>
-                      <option value="trends">Trends</option>
-                      <option value="consumers">Consumers</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Timeframe
-                    </label>
-                    <select
-                      value={timeframe}
-                      onChange={(e) => setTimeframe(e.target.value as TimeframeType)}
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    >
-                      <option value="current">Current</option>
-                      <option value="historical">Historical</option>
-                      <option value="forecast">Forecast</option>
-                    </select>
-                  </div>
-                </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Research Query
+                </label>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                  placeholder="e.g., Analyze the electric vehicle market..."
+                />
               </div>
-            )}
-
-            {activeTab === 'competitor' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Company Name
-                  </label>
-                  <input
-                    type="text"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    placeholder="e.g., Tesla, Inc."
-                  />
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'trends' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Industry
-                  </label>
-                  <input
-                    type="text"
-                    value={industry}
-                    onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    placeholder="e.g., Artificial Intelligence"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Trend Type
-                  </label>
-                  <select
-                    value={trendType}
-                    onChange={(e) => setTrendType(e.target.value as TrendType)}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                  >
-                    <option value="consumer">Consumer</option>
-                    <option value="technology">Technology</option>
-                    <option value="regulatory">Regulatory</option>
-                    <option value="economic">Economic</option>
-                  </select>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
-        
+
           {/* Submit Button */}
           <button
             onClick={handleSubmit}
@@ -256,6 +97,37 @@ export default function MarketResearchPage() {
               <div className="bg-gray-50 rounded-lg p-4 whitespace-pre-wrap text-gray-900">
                 <ReactMarkdown>{result}</ReactMarkdown>
               </div>
+
+              {/* References */}
+              {references.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-md font-semibold mb-2 text-black">Sources & References</h3>
+                  <div className="space-y-3">
+                    {references.map((ref, index) => (
+                      <div key={index} className="bg-gray-50 rounded-lg p-3">
+                        <a 
+                          href={ref.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          {ref.title}
+                        </a>
+                        {ref.date && (
+                          <span className="text-sm text-gray-500 ml-2">
+                            ({ref.date})
+                          </span>
+                        )}
+                        {ref.snippet && (
+                          <p className="text-sm text-gray-600 mt-1">
+                            {ref.snippet}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           <AgentChat />

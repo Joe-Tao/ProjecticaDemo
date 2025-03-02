@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
-
+import Footer from "@/components/footer/Footer";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -39,9 +39,10 @@ export default function RootLayout({
             <div className="bg-white text-gray-300 flex-1 h-screen relative">
               <Header />
               {children}
-              <footer className="bg-white text-center text-black/50 text-sm p-4">
+              {/* <footer className="bg-white text-center text-black/50 text-sm p-4">
                 &copy; {new Date().getFullYear()} Projectica. All rights reserved.
-              </footer>
+              </footer> */}
+              <Footer />
             </div>
           </div>
         </SessionProvider>
