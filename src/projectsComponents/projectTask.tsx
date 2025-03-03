@@ -9,6 +9,8 @@ import { useParams } from 'next/navigation';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { systemAgents } from '@/config/systemAgents';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Agent {
   id?: string;
@@ -159,14 +161,16 @@ export default function TaskList() {
   // handle single task running
   const handleSingleTask = async (task: Task) => {
     const agent = agents.find(a => a.name === task.assignedTo);
-    if (!agent || !agent.id || !userEmail) return;
+    if (!agent || !userEmail) {
+      toast.error('Invalid agent or user not authenticated');
+      return;
+    }
 
     setProcessingTasks(prev => ({ ...prev, [task.id]: true }));
-
+    
     try {
       let response;
       if (agent.name === "Market Research Expert") {
-        
         response = await fetch(`/api/agent/market/search`, {
           method: 'POST',
           headers: {
@@ -179,35 +183,49 @@ export default function TaskList() {
           }),
         });
       } else {
-        // other agents
-        response = await fetch(`/api/agent/${agent.id}/task`, {
+        response = await fetch(`/api/agent/${agent.name.toLowerCase()}/task`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             input: `Please help with this task: ${task.name}. Due date: ${task.dueDate}`,
-            taskId: task.id
+            taskId: task.id,
+            projectId: projectId
           }),
         });
       }
 
-      if (response.ok) {
-        const data = await response.json();
-        const taskRef = doc(db, 'users', userEmail, 'projects', projectId, 'tasks', task.id);
-        await updateDoc(taskRef, {
-          agentResponse: data.analysis || data.response
-        });
-        
-        setAgentResponses(prev => ({
-          ...prev,
-          [task.id]: data.analysis || data.response
-        }));
-        toast.success('Task processed successfully');
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`API request failed: ${response.status} - ${errorData}`);
       }
+
+      const data = await response.json();
+      
+      // 更新Firestore
+      const taskRef = doc(db, 'users', userEmail, 'projects', projectId, 'tasks', task.id);
+      const agentResponse = data.analysis || data.response;
+      await updateDoc(taskRef, { agentResponse });
+      
+      // 更新本地状态
+      setTasks(prevTasks => 
+        prevTasks.map(t => 
+          t.id === task.id 
+            ? { ...t, agentResponse } 
+            : t
+        )
+      );
+      
+      setAgentResponses(prev => ({
+        ...prev,
+        [task.id]: agentResponse
+      }));
+
+      toast.success('Task processed successfully');
     } catch (error) {
       console.error(`Error processing task ${task.id}:`, error);
-      toast.error(`Failed to process task: ${task.name}`);
+      toast.error(error instanceof Error ? error.message : 'Failed to process task');
     } finally {
       setProcessingTasks(prev => ({ ...prev, [task.id]: false }));
     }
@@ -233,17 +251,8 @@ export default function TaskList() {
         try {
           let response;
           if (agent.name === "Market Research Expert") {
-            // determine which market research endpoint to use based on task name
-            const taskLower = task.name.toLowerCase();
-            let endpoint = 'search'; // default endpoint
             
-            if (taskLower.includes('competitor') || taskLower.includes('competitor')) {
-              endpoint = 'competitor';
-            } else if (taskLower.includes('trend') || taskLower.includes('trend')) {
-              endpoint = 'trends';
-            }
-            
-            response = await fetch(`/api/agent/market/${endpoint}`, {
+            response = await fetch(`/api/agent/market`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -255,7 +264,7 @@ export default function TaskList() {
               }),
             });
           } else {
-            // 处理其他agent的任务
+            // handle other agents
             response = await fetch(`/api/agent/${agent.id}/task`, {
               method: 'POST',
               headers: {
@@ -497,13 +506,16 @@ export default function TaskList() {
               
               {(hasResponse || task.agentResponse) && (
                 <div className="mt-4 bg-gray-50 rounded p-4">
-                  <h5 className="font-medium mb-2">Response:</h5>
-                  <textarea
+                    <ReactMarkdown className="prose max-w-none text-black prose-h1:text-black prose-h2:text-black prose-h3:text-black" remarkPlugins={[remarkGfm]}>
+                      {agentResponses[task.id] || task.agentResponse}
+                    </ReactMarkdown>
+
+                                    {/* <textarea
                     className="w-full min-h-[100px] p-2 border rounded text-gray-800"
                     value={agentResponses[task.id] || task.agentResponse}
                     onChange={(e) => handleResponseChange(task.id, e.target.value)}
                     placeholder="Agent response..."
-                  />
+                  /> */}
                 </div>
               )}
             </div>

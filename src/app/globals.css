@@ -6,6 +6,17 @@
   @apply rounded-lg p-3 text-sm flex items-center space-x-2 hover:bg-gray-700/50 cursor-pointer text-gray-300 transition-colors duration-200 overflow-hidden;
 }
 
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose strong,
+.prose code,
+.prose blockquote {
+  color: black !important;
+}
+
 
 
 @layer base {
