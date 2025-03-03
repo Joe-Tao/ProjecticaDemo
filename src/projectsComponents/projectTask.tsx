@@ -312,24 +312,24 @@ export default function TaskList() {
   };
 
   // handle task response change
-  const handleResponseChange = async (taskId: string, newResponse: string) => {
-    if (!userEmail) return;
+  // const handleResponseChange = async (taskId: string, newResponse: string) => {
+  //   if (!userEmail) return;
     
-    try {
-      const taskRef = doc(db, 'users', userEmail, 'projects', projectId, 'tasks', taskId);
-      await updateDoc(taskRef, {
-        agentResponse: newResponse
-      });
-      setAgentResponses(prev => ({
-        ...prev,
-        [taskId]: newResponse
-      }));
-      // toast.success('Response updated');
-    } catch (error) {
-      console.error('Error updating response:', error);
-      toast.error('Failed to update response');
-    }
-  };
+  //   try {
+  //     const taskRef = doc(db, 'users', userEmail, 'projects', projectId, 'tasks', taskId);
+  //     await updateDoc(taskRef, {
+  //       agentResponse: newResponse
+  //     });
+  //     setAgentResponses(prev => ({
+  //       ...prev,
+  //       [taskId]: newResponse
+  //     }));
+  //     // toast.success('Response updated');
+  //   } catch (error) {
+  //     console.error('Error updating response:', error);
+  //     toast.error('Failed to update response');
+  //   }
+  // };
 
   // generate Telegram link
   const getTelegramLink = (username: string) => {
